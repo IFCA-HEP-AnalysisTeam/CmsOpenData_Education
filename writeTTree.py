@@ -10,18 +10,15 @@
 __author__ = "Palmerina Gonzalez Izquierdo"
 __copyright__ = "Copyright (C) 5015 Palmerina G. I."
 __license__ = "Public Domain"
-__version__ = "1.0"
+__version__ = "2.0"
 __maintainer__ = "Palmerina Gonzalez"
 __email__ = "pgi25@alumnos.unican.es"
 
-import ROOT
+import ROOT as ROOT
 from DataFormats.FWLite import Events, Handle
-import array
+from Muon import Muon 
 
-
-
-
-class createTTree(object):
+class writeTTree(object):
 
 	def __init__(self, data_files):
 
@@ -33,6 +30,7 @@ class createTTree(object):
 
 		self.f = ROOT.TFile("mytree.root","RECREATE")
 		self.tree=ROOT.TTree("muons","muons tree")
+		
 		
 		self.Muon_pt = ROOT.std.vector('float')()
 		self.Muon_eta = ROOT.std.vector('float')()
@@ -53,7 +51,6 @@ class createTTree(object):
                 self.Muon_charge = ROOT.std.vector('int')()
 
                 self.Vertex_z = ROOT.std.vector('float')()
-		self.npart = ROOT.std.vector('int')()
 
 
 	def getMuons(self, event):
@@ -92,7 +89,6 @@ class createTTree(object):
 
 
 		self.tree.Branch("Muon_pt", self.Muon_pt)
-		self.tree.Branch("npart", self.npart)
                 self.tree.Branch("Muon_isGlobalMuon", self.Muon_isGlobalMuon)
                 self.tree.Branch("Muon_eta", self.Muon_eta)
                 self.tree.Branch("Muon_px", self.Muon_px)
@@ -121,7 +117,6 @@ class createTTree(object):
 
 
                         self.Vertex_z.push_back(vertex.z())	
-			self.npart.push_back(len(muons))
 	
 			for i, muon in enumerate(muons): 
 				
@@ -146,16 +141,16 @@ class createTTree(object):
 
                                         self.Muon_numberOfValidHits.push_back(muon.numberOfValidHits())
                                         self.Muon_normChi2.push_back(muon.normChi2())
-	
-	
-			'''
-			Populate the tree
-			'''
+			
+
+			
+			#Populate the tree
+			
   			self.tree.Fill()
 		
-			'''
-			Clear the variables
-			'''
+			
+			#Clear the variables
+			
 			self.Muon_pt.clear()
 			self.Muon_eta.clear()
 			self.Muon_px.clear()
@@ -176,7 +171,6 @@ class createTTree(object):
                         self.Muon_normChi2.clear()
 
 			self.Vertex_z.clear()
-                        self.npart.clear()
 
 
 		print "Write"

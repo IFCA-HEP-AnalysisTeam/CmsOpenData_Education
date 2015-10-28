@@ -7,7 +7,7 @@
 # Returns: 
 
 import ROOT
-from createTTree import createTTree
+from writeTTree import writeTTree
 import time
 
 start_time = time.time()
@@ -21,7 +21,7 @@ data_files = [
 maxEv = 100 #number of processed events. maxEvents = -1 runs over all of them
 
 
-t=createTTree(data_files)
+t=writeTTree(data_files)
 tree=t.process(maxEv)
 
 print("--- %s seconds ---" % (time.time() - start_time))

@@ -1,12 +1,13 @@
 import ROOT
+from ROOT import gROOT , TCanvas, TH1F
 import numpy as n
 from scipy.stats import norm
 #from scipy import optimize
 #import matplotlib.mlab as mlab
-import matplotlib
-matplotlib.use('QT4agg')
-import matplotlib.pylab as P
+#import matplotlib.pylab as P
 import array
+
+from Muon import Muon
 
 class readTTree(object):
 	"""
@@ -14,61 +15,67 @@ class readTTree(object):
 	"""
         def __init__(self):
 
-                """
-                TwoMuonAnalyzer initializer
-                """
+		# Get the tree from the file 
                 self.f = ROOT.TFile("mytree.root", "read")
                 self.tree = self.f.Get("muons")
 
+		# Define and init the variables for each branch as ROOT vectors
 		self.Muon_pt = ROOT.std.vector('float')()
 		self.Muon_eta = ROOT.std.vector('float')()
                 self.Muon_energy = ROOT.std.vector('float')()
                 self.Muon_vertex_z = ROOT.std.vector('float')()
-
-		self.npart = ROOT.std.vector('int')()
-
-		self.all_pt = [] 
-		self.all_eta = []
-                self.all_energy = []
-                self.all_vertex_z = []		
-
+		
+		# List of all muons as a list of Muon object (class Muon)
+		self.all_muons = []
+		self.good_muons = [] 
 
 	def process(self):
 
+		# Tell the tree to populate these given variables when reading an entry. 
+		# First parameter is the branch name and second is the address of the variable where the branch data is placed. 
 		self.tree.SetBranchAddress("Muon_pt", self.Muon_pt)
 		self.tree.SetBranchAddress("Muon_eta", self.Muon_eta)
                 self.tree.SetBranchAddress("Muon_energy", self.Muon_energy)
                 self.tree.SetBranchAddress("Muon_vertex_z", self.Muon_vertex_z)
 		
-		self.tree.SetBranchAddress("npart", self.npart)
-                
+		# numEntries: Number of entries(events) of the tree
 		numEntries= self.tree.GetEntries()
+		#print numEntries
+		# For each event, populate the tree branches, create every muon and add it to all_muons list
+		for event in range(0, numEntries):
 
-		for i in range(0, numEntries):
+			# Populate the tree
+			self.tree.GetEntry(event)
 
-			'''
-			Populate the tree
-			'''
-			self.tree.GetEntry(i)
+			# Loop all muons in each entry = vector size
+			for position in range(0,self.Muon_pt.size()):
+		     	   	muon=Muon(event, position, self.Muon_pt[position], self.Muon_eta[position], self.Muon_energy[position], self.Muon_vertex_z[position])
+				# Add each muon to all_muon list
+				self.all_muons.append(muon)
+				# print muon components
+				#muon.printMuon()
 
-			for iMuon in range(0, self.npart[0] ):
-				self.all_pt.append(self.tree.Muon_pt[iMuon])
-				self.all_eta.append(self.tree.Muon_eta[iMuon])
-                                self.all_energy.append(self.tree.Muon_energy[iMuon])
-                                self.all_vertex_z.append(self.tree.Muon_vertex_z[iMuon])
-
-
-
+		#return muon list
+		return self.all_muons
+					
 	def plotter(self):
                 """
                 Plots the histograms
                 """
-                fig1 = P.figure()
+#                fig1 = P.figure()
 
-                ax_1 = fig1.add_subplot(211)
-                ax_1.hist(self.all_pt, bins = 60, alpha=0.5, label="All Muons pt", log = True)
-                ax_1.set_xlabel("Transverse Momentum")
-                ax_1.set_ylabel("frequency")
-                ax_1.legend(loc='upper right')
+#                ax_1 = fig1.add_subplot(211)
+#                ax_1.hist(self.all_pt, bins = 60, alpha=0.5, label="All Muons pt", log = True)
+#                ax_1.set_xlabel("Transverse Momentum")
+#                ax_1.set_ylabel("frequency")
+#                ax_1.legend(loc='upper right')
+#                P.show()
 
-                P.show()
+		#c1 = ROOT.TCanvas( 'c1', 'Muons', 1)
+		h_pt= TH1F( 'self.Muon_pt', 'Muons Transverse Momentun', 50, -2, 300 )
+		for i in range (0, self.Muon_pt.size()):
+
+			h_pt.Fill(self.Muon_pt[i])
+		
+		h_pt.Draw()
+		#c1.Update()
