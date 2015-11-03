@@ -29,6 +29,8 @@ class readTTree(object):
 		self.all_muons = []
 		self.good_muons = [] 
 
+		self.h_pt=ROOT.TH1F( 'h_pt', 'Muons Transverse Momentun', 50, -2, 300 )
+
 	def process(self):
 
 		# Tell the tree to populate these given variables when reading an entry. 
@@ -54,7 +56,13 @@ class readTTree(object):
 				self.all_muons.append(muon)
 				# print muon components
 				#muon.printMuon()
-
+				# Fill the histogram for each variable
+				self.h_pt.Fill(self.Muon_pt[position])
+		# Create a rootfile for the histogramas
+		self.fhistos = ROOT.TFile("histos.root", "RECREATE")
+		# Write histograms in file
+		self.h_pt.Write()
+		self.fhistos.Close()
 		#return muon list
 		return self.all_muons
 					
