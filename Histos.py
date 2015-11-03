@@ -23,6 +23,7 @@ file=ROOT.TFile("histos.root","read")
 Gfile=ROOT.TFile("histos_good.root", "read")
 
 histo=file.Get('h_pt')
+histoG=Gfile.Get('g_pt')
 
 ROOT.TCanvas.__init__._creates = False
 canvas = ROOT.TCanvas()
@@ -48,12 +49,12 @@ canvas._showGuideLines = False
 
 
 histo.Draw()
-plot = {'canvas': canvas}
-
+histoG.Draw("same")
+histoG.SetLineColor(2)
 canvas.Update()
 canvas.Draw()		
 
-canvas.SaveAs("h_pt.png")
+canvas.SaveAs("pt.png")
 
     		
 ROOT.gApplication.Run()
