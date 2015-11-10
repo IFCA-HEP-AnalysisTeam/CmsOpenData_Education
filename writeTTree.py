@@ -41,7 +41,8 @@ class writeTTree(object):
                 self.Muon_vertex_z = ROOT.std.vector('float')()
                 self.Muon_isGlobalMuon = ROOT.std.vector('int')() 
                 self.Muon_isTrackerMuon = ROOT.std.vector('int')()
-                self.Muon_dB = ROOT.std.vector('float')()
+                self.Muon_isStandAloneMuon = ROOT.std.vector('int')()
+		self.Muon_dB = ROOT.std.vector('float')()
                 self.Muon_edB = ROOT.std.vector('float')()
                 self.Muon_isolation_sumPt = ROOT.std.vector('float')()
                 self.Muon_isolation_emEt = ROOT.std.vector('float')()
@@ -50,7 +51,7 @@ class writeTTree(object):
                 self.Muon_normChi2 = ROOT.std.vector('float')()
                 self.Muon_charge = ROOT.std.vector('int')()
 
-                self.Vertex_z = ROOT.std.vector('float')()
+                self.Vertex_Z = ROOT.std.vector('float')()
 
 
 	def getMuons(self, event):
@@ -89,14 +90,15 @@ class writeTTree(object):
 
 
 		self.tree.Branch("Muon_pt", self.Muon_pt)
-                self.tree.Branch("Muon_isGlobalMuon", self.Muon_isGlobalMuon)
                 self.tree.Branch("Muon_eta", self.Muon_eta)
                 self.tree.Branch("Muon_px", self.Muon_px)
                 self.tree.Branch("Muon_py", self.Muon_py)
                 self.tree.Branch("Muon_pz", self.Muon_pz)
                 self.tree.Branch("Muon_vertex_z", self.Muon_vertex_z)
                 self.tree.Branch("Muon_energy", self.Muon_energy)
-                self.tree.Branch("Muon_isTrackerMuon", self.Muon_isTrackerMuon)
+                self.tree.Branch("Muon_isGlobalMuon", self.Muon_isGlobalMuon)
+		self.tree.Branch("Muon_isTrackerMuon", self.Muon_isTrackerMuon)
+		self.tree.Branch("Muon_isStandAloneMuon", self.Muon_isStandAloneMuon)	
 		self.tree.Branch("Muon_dB", self.Muon_dB)
                 self.tree.Branch("Muon_edB", self.Muon_edB)
                 self.tree.Branch("Muon_isolation_sumPt", self.Muon_isolation_sumPt)
@@ -105,7 +107,7 @@ class writeTTree(object):
                 self.tree.Branch("Muon_numberOfValidHits", self.Muon_numberOfValidHits)
                 self.tree.Branch("Muon_normChi2", self.Muon_normChi2)
 		self.tree.Branch("Muon_charge", self.Muon_charge)
-
+		self.tree.Branch("Primary_Vertex_Z", self.Vertex_Z)
 
 		for N, event in enumerate(self.events):
 
@@ -116,11 +118,9 @@ class writeTTree(object):
 		 	vertex = self.getVertex(event)
 
 
-                        self.Vertex_z.push_back(vertex.z())	
-	
 			for i, muon in enumerate(muons): 
 				
-	
+				self.Vertex_Z.push_back(vertex.z())
 				self.Muon_pt.push_back(muon.pt())
 				self.Muon_eta.push_back(muon.eta())
                                 self.Muon_px.push_back(muon.px())
@@ -130,7 +130,8 @@ class writeTTree(object):
                                 self.Muon_vertex_z.push_back(muon.vertex().z())
                                 self.Muon_isGlobalMuon.push_back(muon.isGlobalMuon())
                                 self.Muon_isTrackerMuon.push_back(muon.isTrackerMuon())
-                                self.Muon_dB.push_back(muon.dB(muon.PV3D))
+                                self.Muon_isStandAloneMuon.push_back(muon.isStandAloneMuon())
+				self.Muon_dB.push_back(muon.dB(muon.PV3D))
                                 self.Muon_edB.push_back(muon.edB(muon.PV3D))
                                 self.Muon_isolation_sumPt.push_back(muon.isolationR03().sumPt)
                                 self.Muon_isolation_emEt.push_back(muon.isolationR03().emEt)
@@ -142,6 +143,9 @@ class writeTTree(object):
                                         self.Muon_numberOfValidHits.push_back(muon.numberOfValidHits())
                                         self.Muon_normChi2.push_back(muon.normChi2())
 			
+				else:
+					self.Muon_numberOfValidHits.push_back(-999)
+                                        self.Muon_normChi2.push_back(-999)
 
 			
 			#Populate the tree
@@ -170,7 +174,7 @@ class writeTTree(object):
 			self.Muon_numberOfValidHits.clear()
                         self.Muon_normChi2.clear()
 
-			self.Vertex_z.clear()
+			self.Vertex_Z.clear()
 
 
 		print "Write"
