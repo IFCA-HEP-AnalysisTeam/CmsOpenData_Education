@@ -16,48 +16,38 @@ import numpy
 #	Draw Histograms
 #	"""
 #
-#	def __init__(self):
+class Histos(object):
 
+	def __init__(self):
 
-file=ROOT.TFile("histos.root","read")
-Gfile=ROOT.TFile("histos_good.root", "read")
+		self.file=ROOT.TFile("histos.root","read")
+		self.Gfile=ROOT.TFile("histos_good.root", "read")
+		
+	#### bins and bounds?????
 
-histo=file.Get('h_pt')
-histoG=Gfile.Get('g_pt')
+	def drawHisto(self, *args): 
 
-ROOT.TCanvas.__init__._creates = False
-canvas = ROOT.TCanvas()
+		for i in args:
+			self.histo=self.file.Get('h_'+i)
+			self.gHisto=self.Gfile.Get('g_'+i)
+			self.createCanvas(self.histo, self.gHisto, i)
 
-ROOT.SetOwnership(canvas, False)
+	def createCanvas(self, histo, gHisto, i):
+				
+		canvas = ROOT.TCanvas(""+i, ""+i, 1)
 	
-canvas.cd()
-canvas.Range(-68.75, -7.5, 856.25, 42.5)
-canvas.SetFillColor(0)
-canvas.SetBorderMode(0)
-canvas.SetBorderSize(2)
-canvas.SetTickx(1)
-canvas.SetTicky(1)
-canvas.SetLeftMargin(0.15)
-canvas.SetRightMargin(0.05)
-canvas.SetTopMargin(0.05)
-canvas.SetBottomMargin(0.15)
-canvas.SetFrameFillStyle(0)
-canvas.SetFrameBorderMode(0)
-canvas.SetFrameFillStyle(0)
-canvas.SetFrameBorderMode(0)
-canvas._showGuideLines = False
+		canvas.cd()
 
+		histo.Draw()
+		gHisto.SetLineColor(2)
+		gHisto.Draw("same")
+		canvas.Update()
+		canvas.Draw()		
 
-histo.Draw()
-histoG.Draw("same")
-histoG.SetLineColor(2)
-canvas.Update()
-canvas.Draw()		
-
-canvas.SaveAs("pt.png")
+		canvas.SaveAs("$HOME/CmsOpendata/histos/h_"+ i +".png")
 
     		
-ROOT.gApplication.Run()
+		#ROOT.gApplication.Run()
 
 #if __name__=="__main__":
 #	main()
