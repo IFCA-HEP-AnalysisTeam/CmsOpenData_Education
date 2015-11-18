@@ -25,26 +25,50 @@ class Histos(object):
 		
 	#### bins and bounds?????
 
-	def drawHisto(self, *args): 
+	def drawHisto(self, *args):
+
+                for i in args:
+			self.histo=self.file.Get('h_'+i)
+                        self.createCanvas(i, self.histo)
+
+	def drawSelHisto(self, *args):
+
+                for i in args:
+                        self.gHisto=self.Gfile.Get('g_'+i)
+                        self.createCanvas(i, self.gHisto)
+
+
+
+	def drawTwoHistos(self, *args): 
 
 		for i in args:
-			self.histo=self.file.Get('h_'+i)
-			self.gHisto=self.Gfile.Get('g_'+i)
-			self.createCanvas(self.histo, self.gHisto, i)
+			if i != 'efficiency' and i!='mass':
+				self.histo=self.file.Get('h_'+i)
+                                self.gHisto=self.Gfile.Get('g_'+i)
+                                self.createCanvas(i, self.histo, self.gHisto)
+			else:
 
-	def createCanvas(self, histo, gHisto, i):
+				self.histo=self.Gfile.Get('g_'+i)
+				self.createCanvas(i, self.histo)
+
+
+
+
+	def createCanvas(self, i, histo, gHisto=None):
 				
 		canvas = ROOT.TCanvas(""+i, ""+i, 1)
 	
 		canvas.cd()
-
+		
 		histo.Draw()
-		gHisto.SetLineColor(2)
-		gHisto.Draw("same")
+		if gHisto is not None:
+			gHisto.SetLineColor(2)
+			gHisto.Draw("same")
+		
 		canvas.Update()
 		canvas.Draw()		
 
-		canvas.SaveAs("$HOME/CmsOpendata/histos/h_"+ i +".png")
+		canvas.SaveAs("$HOME/CmsOpendata/histos/"+ i +".png")
 
     		
 		#ROOT.gApplication.Run()
