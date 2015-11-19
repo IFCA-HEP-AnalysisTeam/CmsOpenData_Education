@@ -22,7 +22,7 @@ data_files = [
 t=readTTree()
 tree=t.process()
 
-t.plotter()
+#t.plotter()
 
 print("--- %s seconds ---" % (time.time() - start_time))
 
