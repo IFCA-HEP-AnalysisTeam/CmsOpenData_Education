@@ -19,6 +19,8 @@ class readTTree(object):
                 self.f = ROOT.TFile("mytree.root", "read")
                 self.tree = self.f.Get("muons")
 
+		
+
 		# Define and init the variables for each branch as ROOT vectors
 		self.Muon_pt = ROOT.std.vector('float')()
 		self.Muon_px= ROOT.std.vector('float')()
@@ -37,26 +39,63 @@ class readTTree(object):
 		self.Muon_numberOfValidHits = ROOT.std.vector('int')()
 		self.Muon_normChi2 = ROOT.std.vector('float')()
 		self.Muon_charge = ROOT.std.vector('int')()
-		self.Vertex_Z = ROOT.std.vector('float')()
+		self.Muon_Vertex_Z = ROOT.std.vector('float')()
 
+		self.variable = {
+                        0: "pt",
+                        1: "px",
+                        2: "py",
+                        3: "pz",
+                        4: "eta",
+                        5: "energy",
+                        6: "vertex_z",
+                        7: "dB",
+                        8: "edB",
+                        9: "isolation_sumPt",
+                        10: "isolation_emEt",
+                        11:"isolation_hadEt",
+                        12:"numberOfValidHits",
+                        13: "normChi2",
+                        14: "charge",
+                        15: "isGlobalMuon",
+                        16: "isTrackerMuon",
+                        17: "Vertex_Z"}
+		
+
+		self.vector = [self.Muon_pt, self.Muon_px, self.Muon_py, self.Muon_pz, self.Muon_eta, self.Muon_energy, self.Muon_vertex_z, self.dB, self.edB, self.Muon_isolation_sumPt, self.Muon_isolation_emEt, self.Muon_isolation_hadEt, self.Muon_numberOfValidHits, self.Muon_normChi2, self.Muon_charge, self.Muon_isGlobalMuon, self.Muon_isTrackerMuon, self.Muon_Vertex_Z] 
 				
 		# List of all muons as a list of Muon object (class Muon)
 		self.all_muons = []
 
 		# Define and init the histograms for each branch using TH1F from ROOT
-		self.h_pt=ROOT.TH1F( 'h_pt', 'Muons Transverse Momentun', 50, -2, 20000 )
-		self.h_px=ROOT.TH1F( 'h_px', 'Muons x- Momentun', 50, -300, 300 )
-		self.h_py=ROOT.TH1F( 'h_py', 'Muons y- Momentun', 50, -300, 300 )
-		self.h_pz=ROOT.TH1F( 'h_pz', 'Muons z- Momentun', 50, -300, 300 )
-		self.h_eta=ROOT.TH1F( 'h_eta', 'Angle Transvese', 50, -50 , 50 )
-		self.h_energy=ROOT.TH1F('h_energy','Muons Energy', 50, -300,300)
-		self.h_charge=ROOT.TH1F('h_charge','Muons Charge', 50,-2,2)
-		self.h_normChi2=ROOT.TH1F('h_normChi2', 'Muons Chi2', 50, -200,200)
-		self.h_numberOfValidHits=ROOT.TH1F('h_numberOfValidHits', 'Number of Valid Hits', 50, -200,200)
-		self.h_dB=ROOT.TH1F('h_dB','Impact Parameter',50,-1,200)
-		#self.h_edB=ROOT.TH1F('h_edB','Impact Parameter Error',50,-1,200) Pintar como barras de error en el histograma?
-		self.h_isolation_sumPt=ROOT.TH1F('h_isolation_sumPt','IsolationX',50, -300,300)
-		self.h_isolation_emEt=ROOT.TH1F('h_isolation_emEt','IsolationX',50, -300,300)
+		self.histograms={}
+
+		self.attributes = [[]]
+		# Dictionary: Set of variables
+		self.variable = {
+	                0: "pt",
+			1: "px", 
+			2: "py",
+			3: "pz",
+        	        4: "eta",
+			5: "energy",
+			6: "vertex_z",
+                        7: "dB",
+			8: "edB",
+                	9: "isolation_sumPt",
+                	10: "isolation_emEt",
+			11:"isolation_hadEt",
+			12:"numberOfValidHits",
+                	13: "normChi2",
+                	14: "charge", 
+			15: "isGlobalMuon", 
+			16: "isTrackerMuon", 
+			17: "Vertex_Z"}
+			
+		for i in range(0, len(self.variable)):
+			#self.histograms[i]= ROOT.TH1F(self.variable[i], self.variable[i], 50, -300, 300)
+			self.declareHisto(i, self.variable[i], 50, -300, 300)
+
 
 	def process(self):
 
@@ -66,26 +105,10 @@ class readTTree(object):
 		is the name of the real variable where the data is adressed,as we said before. This
 	        variable or branch name create a physical memory direction in your computer where   		    store the information that it contains.
 		'''
-
-		self.tree.SetBranchAddress("Muon_pt", self.Muon_pt)
-		self.tree.SetBranchAddress("Muon_px", self.Muon_px)
-		self.tree.SetBranchAddress("Muon_py", self.Muon_py)
-		self.tree.SetBranchAddress("Muon_pz", self.Muon_pz)
-		self.tree.SetBranchAddress("Muon_eta", self.Muon_eta)
-                self.tree.SetBranchAddress("Muon_energy", self.Muon_energy)
-                self.tree.SetBranchAddress("Muon_vertex_z", self.Muon_vertex_z)
-		self.tree.SetBranchAddress("Muon_dB", self.dB)
-		self.tree.SetBranchAddress("Muon_edB", self.edB)
-		self.tree.SetBranchAddress("Muon_isolation_sumPt",self.Muon_isolation_sumPt )
-		self.tree.SetBranchAddress("Muon_isolation_emEt",self.Muon_isolation_emEt )
-		self.tree.SetBranchAddress("Muon_isolation_hadEt",self.Muon_isolation_hadEt)
-		self.tree.SetBranchAddress("Muon_isGlobalMuon", self.Muon_isGlobalMuon)
-		self.tree.SetBranchAddress("Muon_isTrackerMuon", self.Muon_isTrackerMuon)
-		self.tree.SetBranchAddress("Muon_numberOfValidHits",self.Muon_numberOfValidHits)
-		self.tree.SetBranchAddress("Muon_normChi2",self.Muon_normChi2)
-		self.tree.SetBranchAddress("Muon_charge",self.Muon_charge)
-		self.tree.SetBranchAddress("Primary_Vertex_Z",self.Vertex_Z)		
-
+		# name of Vertez Z is Vertex_Z instead of Primary_Vertex_Z
+		for i in range(0, len(self.vector)): 
+			self.tree.SetBranchAddress("Muon_"+self.variable[i], self.vector[i])
+		
 		# numEntries: Number of entries(events) of the tree
 		numEntries= self.tree.GetEntries()
 	
@@ -96,50 +119,49 @@ class readTTree(object):
 			self.tree.GetEntry(event)
 
 			# Loop all muons in each entry = vector size
-			for position in range(0,self.Muon_pt.size()):
+			for position in range(0,self.vector[0].size()):
 		     	   	#muon=Muon(event, position, self.Muon_pt[position], self.Muon_eta[position], self.Muon_energy[position], self.Muon_vertex_z[position])
-				#He quitado el self.Muon_Vertex_Z[position]
+				self.attributes=[]
+				print len(self.variable)
+				for var in range(0, len(self.variable)):
+					
+					self.attributes.append(self.vector[var][position])
+				print self.attributes[0]
+				muon=Muon(event, position, self.attributes)
 
-				muon=Muon(event, position, self.Muon_pt[position], self.Muon_px[position],self.Muon_py[position],self.Muon_pz[position],self.Muon_eta[position], self.Muon_energy[position], self.Muon_vertex_z[position], self.dB[position], self.edB[position],self.Muon_isolation_sumPt[position],self.Muon_isolation_emEt[position],self.Muon_isolation_hadEt[position],self.Muon_isGlobalMuon[position],self.Muon_isTrackerMuon[position], self.Muon_numberOfValidHits[position],self.Muon_normChi2[position],self.Muon_charge[position], self.Vertex_Z[position])
+			#	muon=Muon(event, position, self.Muon_pt[position], self.Muon_px[position],self.Muon_py[position],self.Muon_pz[position],self.Muon_eta[position], self.Muon_energy[position], self.Muon_vertex_z[position], self.dB[position], self.edB[position],self.Muon_isolation_sumPt[position],self.Muon_isolation_emEt[position],self.Muon_isolation_hadEt[position],self.Muon_isGlobalMuon[position],self.Muon_isTrackerMuon[position], self.Muon_numberOfValidHits[position],self.Muon_normChi2[position],self.Muon_charge[position], self.Vertex_Z[position])
 
 				# Add each muon to all_muon list
 				self.all_muons.append(muon)
-
 				# print muon components
 				#muon.printMuon()
 
-				# Fill the histogram for each variable
-				self.h_pt.Fill(self.Muon_pt[position])
-				self.h_px.Fill(self.Muon_px[position])
-				self.h_py.Fill(self.Muon_py[position])
-				self.h_pz.Fill(self.Muon_pz[position])
-				self.h_eta.Fill(self.Muon_eta[position])
-				self.h_energy.Fill(self.Muon_energy[position])
-				self.h_charge.Fill(self.Muon_charge[position])
-				self.h_normChi2.Fill(self.Muon_normChi2[position])
-				self.h_numberOfValidHits.Fill(self.Muon_numberOfValidHits[position])
-				self.h_dB.Fill(self.dB[position])
-				self.h_isolation_sumPt.Fill(self.Muon_isolation_sumPt[position])
-				self.h_isolation_emEt.Fill(self.Muon_isolation_emEt[position])		
-
+				for i in range(0, len(self.variable)):
+                		        self.fillHisto(i, self.vector[i][position])
+		
+		for i in range(0,10):
+			print self.all_muons[i].printMuon()
+			
 		# Create a rootfile for the histogramas
 		self.fhistos = ROOT.TFile("histos.root", "RECREATE")
 		# Write histograms in fhistos file
-		self.h_pt.Write()
-		self.h_px.Write()
-		self.h_py.Write()
-		self.h_pz.Write()
-		self.h_eta.Write()
-		self.h_energy.Write()
-		self.h_normChi2.Write()
-		self.h_numberOfValidHits.Write()
-		self.h_dB.Write()
-		self.h_isolation_sumPt.Write()
-		self.h_isolation_emEt.Write()
-		self.h_eta.Write()
-
-		#Close the file
+		
+		for i in range(0, len(self.histograms)):
+			self.histograms[i].Write()
+		
+		#Close file
 		self.fhistos.Close()
 
 		#return muon list
 		return self.all_muons
+
+	def declareHisto(self, i, name, bins, min, max, xlabel='value'):
+		self.histograms[i]= ROOT.TH1F("h_"+name, name, bins, min, max)
+		# Does not work
+		#self.histograms[i].setXAxisTitle(xlabel+' of '+name)
+		#self.histograms[i].SetYaxisTitle('events')
+	
+	def fillHisto(self, i, value, weight=1):
+		self.histograms[i].Fill(value, weight)
+
+

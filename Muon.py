@@ -7,28 +7,28 @@ import array
 class Muon(object):
 
 	# Vertex_Z se ha quitado,  numberOfValidHits y normChi2!!!!!!!
-	def __init__(self, event, position, pt,px,py,pz, eta, energy,vertex_z, dB,edB,isolation_sumPt,isolation_emEt,isolation_hadEt,isGlobalMuon,isTrackerMuon,numberOfValidHits, normChi2, charge, Vertex_Z):
+	def __init__(self, event, position, muon):
 #	def __init__(self, event, position, pt):
 		self.event = event
 		self.position = position
-		self.pt = pt
-		self.px=px
-		self.py=py
-		self.pz=pz
-		self.eta = eta
-		self.energy = energy
-		self.vertex_z = vertex_z
-		self.dB=dB
-		self.edB=edB
-		self.isolation_sumPt=isolation_sumPt
-		self.isolation_emEt=isolation_emEt
-		self.isolation_hadEt=isolation_hadEt
-		self.isGlobalMuon=isGlobalMuon
-		self.isTrackerMuon=isTrackerMuon
-		self.numberOfValidHits=numberOfValidHits
-		self.normChi2=normChi2
-		self.charge=charge
-		self.Vertex_Z=Vertex_Z
+		self.pt = muon [0]
+		self.px= muon[1]
+		self.py= muon[2]
+		self.pz= muon[3]
+		self.eta = muon[4]
+		self.energy = muon[5]
+		self.vertex_z = muon[6]
+		self.dB= muon[7]
+		self.edB= muon[8]
+		self.isolation_sumPt= muon[9]
+		self.isolation_emEt= muon[10]
+		self.isolation_hadEt= muon[11]
+		self.isGlobalMuon=muon[15]
+		self.isTrackerMuon=muon[16]
+		self.numberOfValidHits=muon[12]
+		self.normChi2=muon[13]
+		self.charge=muon[14]
+		self.Vertex_Z=muon[17]
 
 	def setMuon(pt, eta, energy):
                 self.pt=pt

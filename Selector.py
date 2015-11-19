@@ -15,15 +15,15 @@ class Selection(object):
 	#Otros posibles constructores eligiendo el numero de cortes y en cuales variables."Serian Muchos"
 
 
-		self.pt_min = pt_min
-		self.eta_max = eta_max
-		self.distance = distance
-		self.dB_max = dB_max
-		self.normChi2_max = normChi2_max
-		self.isolation = isolation
-		#dimensionless. (sumPt+emEnergy+hadEnergy)/muon.pt = maxima energia antes de considerarlo como un jet de particulas. 
-		self.mass_min = mass_min
-		self.numValidHits = numValidHits 
+		#self.pt_min = pt_min
+		#self.eta_max = eta_max
+		#self.distance = distance
+		#self.dB_max = dB_max
+		#self.normChi2_max = normChi2_max
+		#self.isolation = isolation
+		###dimensionless. (sumPt+emEnergy+hadEnergy)/muon.pt = maxima energia antes de considerarlo como un jet de particulas. 
+		#self.mass_min = mass_min
+		#self.numValidHits = numValidHits 
 
 		# Good muons, mass, pt list
 		self.good_muons = []
@@ -52,7 +52,7 @@ class Selection(object):
 			#muons[iMuon].printMuon()
 
 			# The selector function evaluates if the inner muon is GlobalMuon and TrackerMuon returning a boolean type before starting the selection for the different variables cuts. 
-        		if self.selector(self.muons[iMuon],self.bin, self.pt_min,self.eta_max,self.distance,self.dB_max,self.isolation,self.normChi2_max,self.numValidHits):
+        		if self.selector(self.muons[iMuon],self.bin, pt_min, eta_max, distance, dB_max, isolation, normChi2_max, numValidHits):
 				#append this muon to the good muons list.
 				#muons[iMuon].printMuon()
 				self.good_muons.append(self.muons[iMuon])
@@ -121,7 +121,7 @@ class Selection(object):
 		i=i+1
 		bin[i]=self.addBin(bin, i)
 
-		'''
+		
 		if muon.getPt()<pt_min:
 			return False
 		i=i+1
@@ -163,7 +163,7 @@ class Selection(object):
 		#Last bin for the efficiency.Just the number of good muons. 
 		i=i+1
                 bin[i]=self.addBin(bin, i)
-		'''
+	
 
 
 		#print bin

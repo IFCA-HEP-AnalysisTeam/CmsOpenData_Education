@@ -44,9 +44,10 @@ def main ():
 		'efficiency': 'efficiency'}
 	
 	# Choose which variables want to draw in histos and pass them as parameters
-	histo.drawHisto(variable['eta'], variable['pt'])
-	histo.drawSelHisto(variable['eta'], variable['mass'])
+	#histo.drawHisto(variable['eta'], variable['pt'])
+	#histo.drawSelHisto(variable['eta'], variable['mass'])
 
+	histo.GaussianFit(variable['pt'])
 	#print("---Total time: %s seconds ---" % (time.time() - start_time))	
 	
 if __name__ == "__main__":

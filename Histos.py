@@ -6,7 +6,7 @@ from Muon import Muon
 from readTTree import readTTree
 #from Selector import Selector
 
-from ROOT import gROOT, TH1F, TGraph
+from ROOT import gROOT, TH1F, TGraph, gStyle
 import matplotlib as plt
 import numpy
 
@@ -29,13 +29,13 @@ class Histos(object):
 
                 for i in args:
 			self.histo=self.file.Get('h_'+i)
-                        self.createCanvas(i, self.histo)
+                        self.createCanvas(self.histo, i)
 
 	def drawSelHisto(self, *args):
 
                 for i in args:
                         self.gHisto=self.Gfile.Get('g_'+i)
-                        self.createCanvas(i, self.gHisto)
+                        self.createCanvas(self.gHisto, i)
 
 
 
@@ -45,18 +45,23 @@ class Histos(object):
 			if i != 'efficiency' and i!='mass':
 				self.histo=self.file.Get('h_'+i)
                                 self.gHisto=self.Gfile.Get('g_'+i)
-                                self.createCanvas(i, self.histo, self.gHisto)
+                                self.createCanvas( self.histo, i, self.gHisto)
 			else:
 
 				self.histo=self.Gfile.Get('g_'+i)
-				self.createCanvas(i, self.histo)
+				self.createCanvas( self.histo, i)
+		
 
+	def GaussianFit(self, histo):
+		self.gHisto=self.Gfile.Get('g_'+histo)
+		self.gHisto.Fit("gaus")		
+		#self.fit1 = self.gHisto.GetFunction("gaus")
+		gStyle.SetOptFit()
+		self.createCanvas(self.gHisto, histo)
 
-
-
-	def createCanvas(self, i, histo, gHisto=None):
+	def createCanvas(self, histo, i=None, gHisto=None):
 				
-		canvas = ROOT.TCanvas(""+i, ""+i, 1)
+		canvas = ROOT.TCanvas("", "", 1)
 	
 		canvas.cd()
 		
@@ -71,7 +76,7 @@ class Histos(object):
 		canvas.SaveAs("$HOME/CmsOpendata/histos/"+ i +".png")
 
     		
-		#ROOT.gApplication.Run()
+		ROOT.gApplication.Run()
 
 #if __name__=="__main__":
 #	main()
