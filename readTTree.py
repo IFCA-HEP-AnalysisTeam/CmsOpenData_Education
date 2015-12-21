@@ -8,6 +8,8 @@ from scipy.stats import norm
 import array
 
 from Muon import Muon
+from Cuts_Config import Cuts
+
 
 class readTTree(object):
 	"""
@@ -28,7 +30,7 @@ class readTTree(object):
 		self.Muon_pz= ROOT.std.vector('float')()
 		self.Muon_eta = ROOT.std.vector('float')()
                 self.Muon_energy = ROOT.std.vector('float')()
-                self.Muon_vertex_z = ROOT.std.vector('float')()
+                self.Muon_distance = ROOT.std.vector('float')()
 		self.dB = ROOT.std.vector('float')()
 		self.edB = ROOT.std.vector('float')()
 		self.Muon_isolation_sumPt = ROOT.std.vector('float')()
@@ -39,39 +41,22 @@ class readTTree(object):
 		self.Muon_numberOfValidHits = ROOT.std.vector('int')()
 		self.Muon_normChi2 = ROOT.std.vector('float')()
 		self.Muon_charge = ROOT.std.vector('int')()
-		self.Muon_Vertex_Z = ROOT.std.vector('float')()
 
-		self.variable = {
-                        0: "pt",
-                        1: "px",
-                        2: "py",
-                        3: "pz",
-                        4: "eta",
-                        5: "energy",
-                        6: "vertex_z",
-                        7: "dB",
-                        8: "edB",
-                        9: "isolation_sumPt",
-                        10: "isolation_emEt",
-                        11:"isolation_hadEt",
-                        12:"numberOfValidHits",
-                        13: "normChi2",
-                        14: "charge",
-                        15: "isGlobalMuon",
-                        16: "isTrackerMuon",
-                        17: "Vertex_Z"}
-		
-
-		self.vector = [self.Muon_pt, self.Muon_px, self.Muon_py, self.Muon_pz, self.Muon_eta, self.Muon_energy, self.Muon_vertex_z, self.dB, self.edB, self.Muon_isolation_sumPt, self.Muon_isolation_emEt, self.Muon_isolation_hadEt, self.Muon_numberOfValidHits, self.Muon_normChi2, self.Muon_charge, self.Muon_isGlobalMuon, self.Muon_isTrackerMuon, self.Muon_Vertex_Z] 
+		# Self.vector is a list of all variable vectors set above. It is used in this code for simplify the syntaxis
+		self.vector = [self.Muon_pt, self.Muon_px, self.Muon_py, self.Muon_pz, self.Muon_eta, self.Muon_energy, self.Muon_distance, self.dB, self.edB, self.Muon_isolation_sumPt, self.Muon_isolation_emEt, self.Muon_isolation_hadEt, self.Muon_numberOfValidHits, self.Muon_normChi2, self.Muon_charge, self.Muon_isGlobalMuon, self.Muon_isTrackerMuon] 
 				
 		# List of all muons as a list of Muon object (class Muon)
 		self.all_muons = []
 
+
 		# Define and init the histograms for each branch using TH1F from ROOT
 		self.histograms={}
+		self.selec_histograms={}
 
-		self.attributes = [[]]
-		# Dictionary: Set of variables
+		# Vector for efficiency: Count the amount of muons along the cuts
+		self.bin=[0.]*10
+
+		# Dictionary: Set of variables to simplify the code later: SetBranchAddress, declare and fill histos, etc.
 		self.variable = {
 	                0: "pt",
 			1: "px", 
@@ -79,7 +64,7 @@ class readTTree(object):
 			3: "pz",
         	        4: "eta",
 			5: "energy",
-			6: "vertex_z",
+			6: "distance",
                         7: "dB",
 			8: "edB",
                 	9: "isolation_sumPt",
@@ -89,79 +74,232 @@ class readTTree(object):
                 	13: "normChi2",
                 	14: "charge", 
 			15: "isGlobalMuon", 
-			16: "isTrackerMuon", 
-			17: "Vertex_Z"}
-			
-		for i in range(0, len(self.variable)):
-			#self.histograms[i]= ROOT.TH1F(self.variable[i], self.variable[i], 50, -300, 300)
-			self.declareHisto(i, self.variable[i], 50, -300, 300)
+			16: "isTrackerMuon"
+			}
+		
 
+                # Initialize the histograms for all and selected muons through the function "self.declareHisto"
+		# ** Initialize the histograms for global variables and the mass and efficiency will be initialize later
+	
+		for i in range(0, len(self.variable)):
+			self.declareHisto(i, self.variable[i], "h", 50, -300, 300)
+			self.declareHisto(i, self.variable[i], "g", 50, -300, 300)
+		self.declareHisto(len(self.variable), "Mass", "g",  50, -300, 300)
+		self.declareHisto(len(self.variable)+1, "efficiency", "g",  50, -300, 300)
+
+
+
+	#####################################################################
+	###                        PROCESS                                ###
+	#####################################################################
 
 	def process(self):
 
 		'''
-		Initialization of the reading process. This function address the data stored in the 		    tree to the different branches previously defined above. For each variable, the 
-		first parameter in the sentence is the name you want for the branch and the second one 
-		is the name of the real variable where the data is adressed,as we said before. This
-	        variable or branch name create a physical memory direction in your computer where   		    store the information that it contains.
+		Initialization of the reading process. This function address the data stored in the tree to the different branches previously defined.
 		'''
-		# name of Vertez Z is Vertex_Z instead of Primary_Vertex_Z
+                
+                #Address the data stored in the branches to the variables 
+		
 		for i in range(0, len(self.vector)): 
 			self.tree.SetBranchAddress("Muon_"+self.variable[i], self.vector[i])
-		
+
 		# numEntries: Number of entries(events) of the tree
 		numEntries= self.tree.GetEntries()
-	
-		# For each event or entry,the following loop populates the tree branches, creates every muon and add it to all_muons list	
-		for event in range(0, numEntries):
+		# Cuts to select muon: Call to Cuts_Config
+		self.cuts= Cuts()
 
-			# Address the data of each physical variable registed in this event or entry number to its branch associated listed above.   
+		# Loop over all events 
+		# -------------------------------------------------------------------------------
+                # For each entry,the following loop populates the vector of variables, creates every muon and add it to all_muons list 
+		# event = current entry of the tree
+		for event in range(0, numEntries):
+		        
+                        # Local variable: Init a list of selected muons in this event.  	
+			self.event_selected_muons = []
+			
 			self.tree.GetEntry(event)
 
-			# Loop all muons in each entry = vector size
+			# Loop over the muons in this event 
+			# ------------------------------------------------------------------------
+			# position = current position in the event
 			for position in range(0,self.vector[0].size()):
-		     	   	#muon=Muon(event, position, self.Muon_pt[position], self.Muon_eta[position], self.Muon_energy[position], self.Muon_vertex_z[position])
-				self.attributes=[]
-				print len(self.variable)
-				for var in range(0, len(self.variable)):
-					
-					self.attributes.append(self.vector[var][position])
-				print self.attributes[0]
-				muon=Muon(event, position, self.attributes)
-
-			#	muon=Muon(event, position, self.Muon_pt[position], self.Muon_px[position],self.Muon_py[position],self.Muon_pz[position],self.Muon_eta[position], self.Muon_energy[position], self.Muon_vertex_z[position], self.dB[position], self.edB[position],self.Muon_isolation_sumPt[position],self.Muon_isolation_emEt[position],self.Muon_isolation_hadEt[position],self.Muon_isGlobalMuon[position],self.Muon_isTrackerMuon[position], self.Muon_numberOfValidHits[position],self.Muon_normChi2[position],self.Muon_charge[position], self.Vertex_Z[position])
+		     		# List of muon variables to create the Muon Object
+				self.variables = []
+				
+				# Add the value of each variable to variables list
+				for var in range(0, len(self.variable)):						
+					self.variables.append(self.vector[var][position])
+				#print self.vector[0][position]
+				# Create the Muon: is identified by the event, a position in the event and the values of its variables
+				muon=Muon(event, position, self.variables)
 
 				# Add each muon to all_muon list
 				self.all_muons.append(muon)
-				# print muon components
-				#muon.printMuon()
+				
+				# Fill all muons histograms
+				for var in range(0, len(self.variable)):
+                                        self.fillHisto(var, "h", self.vector[var][position])
 
-				for i in range(0, len(self.variable)):
-                		        self.fillHisto(i, self.vector[i][position])
+				# Select the muon
+				# -----------------------------------------------------------------
+				if self.selector(muon, self.bin, self.cuts):
+					# If the muon is between the defined cuts, add it to the selected muon list in the event 
+					print "Selected muon belongs to ", event, " event"
+					self.event_selected_muons.append(muon)
+
+			# CHECK MASS - Only the events with more than 1 muons selected
+			# -----------------------------------------------------------
+			if len(self.event_selected_muons) > 1:
+				print "evento con mas de 1 muon"
+				
+				# Loop over the event selected muons
+				for i in range (0,len(self.event_selected_muons)):
+                        	# this is made to ensure j=i+1 is not out of range 
+                        		for j in range (i+1, len(self.event_selected_muons)):
+						
+                                		if (self.event_selected_muons[i].getCharge()*self.event_selected_muons[j].getCharge())<0:
+                                        		#get its Lorentz vector through a ROOT function 
+                                        		tlv1=ROOT.TLorentzVector()
+
+                                        		tlv1.SetPxPyPzE(self.event_selected_muons[i].getPx(), self.event_selected_muons[i].getPy(), self.event_selected_muons[i].getPz(), self.event_selected_muons[i].getEnergy())
+                                        		tlv2=ROOT.TLorentzVector()
+                                        		tlv2.SetPxPyPzE(self.event_selected_muons[j].getPx(), self.event_selected_muons[j].getPy(), self.event_selected_muons[j].getPz(), self.event_selected_muons[j].getEnergy())
+
+
+                                        		#self.pt_1.append(self.event_selected_muons[i].getPt())
+                                        		#self.pt_2.append(self.event_selected_muons[j].getPt())
+                                        		mass=(tlv1+tlv2).M()
+		#					print "the selected muon mass is: ", mass
+                                        		if self.cuts.mass_min<mass:
+								print "The mass is between the cuts: ", mass
+								# Fill the selected muons
+								for var in range(0, len(self.variable)):
+									self.fillHisto( var, "g", self.vector[var][position]) 	
+								self.fillHisto(len(self.variable), "g", mass)	
+
+
+		####### Only For Debugging ########
+		#for i in range(0,10):
+		#	print self.all_muons[i].printMuon()
 		
-		for i in range(0,10):
-			print self.all_muons[i].printMuon()
-			
+		
 		# Create a rootfile for the histogramas
 		self.fhistos = ROOT.TFile("histos.root", "RECREATE")
-		# Write histograms in fhistos file
 		
+		# Write histograms in fhistos file
 		for i in range(0, len(self.histograms)):
 			self.histograms[i].Write()
-		
+	
 		#Close file
 		self.fhistos.Close()
 
-		#return muon list
-		return self.all_muons
+		# Create a rootfile for the selected histograms
+		self.shistos = ROOT.TFile("selec_histos.root", "RECREATE")
+		# Write histograms in shistos file
+                for i in range(0, len(self.selec_histograms)):
+                        self.selec_histograms[i].Write()
+		# Write efficiency histogram in selec_histos file
+		self.bin[0]= len(self.all_muons)
+                for i in range(0,len(self.bin)):
+                        a=self.bin[i]
+                        self.selec_histograms[len(self.variable)+1].Fill(a)
+                        print "bin", i, a
 
-	def declareHisto(self, i, name, bins, min, max, xlabel='value'):
-		self.histograms[i]= ROOT.TH1F("h_"+name, name, bins, min, max)
+                #Close file
+                self.shistos.Close()
+
+
+	def declareHisto(self, i, name, type, bins, min, max, xlabel='value'):
+		'''
+		Function to declare de histograms
+		
+		i = identify the histogram for each variable
+		name = variable name
+		bins = number of bins in histogram
+		min = minimum X value of the histogram
+		max = maximum X value of the histogram
+		xlabel (optional) = name of X axis
+		'''
+		if type=="h":
+			self.histograms[i]= ROOT.TH1F("h_"+name, name, bins, min, max)
+		else: 
+			self.selec_histograms[i]= ROOT.TH1F("g_"+name, name, bins, min, max)
 		# Does not work
 		#self.histograms[i].setXAxisTitle(xlabel+' of '+name)
 		#self.histograms[i].SetYaxisTitle('events')
 	
-	def fillHisto(self, i, value, weight=1):
-		self.histograms[i].Fill(value, weight)
+	def fillHisto(self, i, type, value, weight=1):
+		'''
+		Function to fill the histograms
+		
+		i = identify the histogram for each variable
+		value = define the value for filling the histogram 
+		'''
+		if type=="h":
+			self.histograms[i].Fill(value, weight)
+		else:
+			self.selec_histograms[i].Fill(value, weight)
+	
+	def addBin(self, bin, i):
+                bin[i]=bin[i]+1
+                return bin[i]
 
+
+
+        def selector(self,muon,bin, cuts):
+                i=0
+                if not muon.getIsGlobalMuon():
+                        return False
+                i=i+1
+		bin[i]=self.addBin(bin, i)
+
+                if not  muon.getIsTrackerMuon():
+                        return False
+
+                i=i+1
+		bin[i]=self.addBin(bin, i)
+
+                if muon.getPt()<cuts.pt_min:
+                        return False
+                i=i+1
+		bin[i]=self.addBin(bin, i)
+
+                if muon.getEta() > cuts.eta_max:
+                        return False
+                i=i+1
+		bin[i]=self.addBin(bin, i)
+
+                if muon.getdB()> cuts.dB_max:
+                        return False
+
+                i=i+1
+		bin[i]=self.addBin(bin, i)
+
+                if ((muon.getIsolation_sumPt()+muon.getIsolation_emEt()+muon.getIsolation_hadEt())/muon.getPt())>cuts.isolation:
+                        return False
+                i=i+1
+		bin[i]=self.addBin(bin, i)
+
+                if muon.getDistance()> cuts.distance:
+                        return False
+
+                i=i+1
+		bin[i]=self.addBin(bin, i)
+
+                if muon.getNormChi2()>cuts.normChi2:
+                        return False
+
+                i=i+1
+		bin[i]=self.addBin(bin, i)
+
+                if muon.getNumberOfValidHits()<cuts.numValidHits:
+			return False
+
+                #Last bin for the efficiency.Just the number of good muons. 
+                i=i+1
+		bin[i]=self.addBin(bin, i)
+
+                #print bin
+                return True
 
