@@ -7,7 +7,6 @@ from scipy.stats import norm
 #import matplotlib.pylab as P
 import array
 from Cuts import Cuts
-from Muon import Muon
 
 class Analyzer(object):
         """
@@ -20,7 +19,7 @@ class Analyzer(object):
                 # Get tree from  mytree.root file
                 self.file = ROOT.gROOT.GetListOfFiles().FindObject("mytree.root")
                 if not self.file or not file.IsOpen():
-                        self.file = ROOT.TFile("mytree.root", "read")
+                        self.file = ROOT.TFile("files/mytree.root", "read")
                 self.tree = self.file.Get("muons")
 
                 #Call Init function to initialize the tree and set branches             

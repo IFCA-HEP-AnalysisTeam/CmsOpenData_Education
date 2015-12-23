@@ -14,8 +14,8 @@ class Histos(object):
 		'''
 		Constructor: only read the histograms from the both files
 		'''
-		self.file=ROOT.TFile("histos.root","read")
-		self.Gfile=ROOT.TFile("goodHistos.root", "read")
+		self.file=ROOT.TFile("../files/histos.root","read")
+		self.Gfile=ROOT.TFile("../files/goodHistos.root", "read")
 		
 	#### bins and bounds?????
 

@@ -2,36 +2,23 @@ import ROOT as ROOT
 import sys
 import getopt
 from DataFormats.FWLite import Events, Handle
-from Muon import Muon
-from readTTree import readTTree
-from Selector import Selection
 from Histos import Histos
+from Analyzer import Analyzer
 import time
 
 
 
 def main ():
 
-	#start_time = time.time()
+	start_time = time.time()
+       
+        # To start this exercise you must call different classes which make the analysis
 
-	pt_min = 5
-	eta_max = 2.4
-	distance = 0.2
-	dB_max = 0.02 # cm. dB=impact parameter
-	#normChi2_max = 10
-	isolation = 0.15
-	#dimensionless. (sumPt+emEnergy+hadEnergy)/muon.pt = maxima energia antes de considerarlo como un jet de particulas.
-	mass_min = 20
-	normChi2_max = 10
-	numValidHits = 10
-
-	# Call class Selector for doing the muon selection
-	# The cut config of each variable has been passed as argument.
-	selector= Selection(pt_min, eta_max, distance, dB_max, isolation, mass_min, normChi2_max, numValidHits)
-	# Call histos class to draw the histogram(s)
-	# Pass the variable or variables which we want to draw as parameter 
+        #analysis=Analyzer()
+        #analysis.process()
 	histo=Histos()
-	# Dictionary with the variables for drawing in histos
+
+	# Here you have a dictionary with the main variables used in the analysis
 	variable = {
 		'pt': 'pt',
 		'eta': 'eta',
@@ -43,13 +30,32 @@ def main ():
 		'numValidHits': 'numValidHits',
 		'efficiency': 'efficiency'}
 	
-	# Choose which variables want to draw in histos and pass them as parameters
-	#histo.drawHisto(variable['eta'], variable['pt'])
-	#histo.drawSelHisto(variable['eta'], variable['mass'])
+        # Exercise 1:
+	# Choose which variables you want to draw in a  histogram and pass them as parameters
+	histo.drawHisto(variable['eta'], variable['pt'])
 
-	histo.GaussianFit(variable['pt'])
-	#print("---Total time: %s seconds ---" % (time.time() - start_time))	
+        # Exercise 2:
+	# Now select the good muons. Try to find the right cut to approach the real Z event
+
+        ## Change the default cuts in "Cuts.py" script
+
+        # Check up drawing the new histos. Try to draw the same variable before and after the cut
+
+	#histo.drawSelHisto(variable['eta'], variable['mass'])
+	#histo.drawTwoHistos(variable['eta'])
+
+        # Make the fits in the mass histogram
+	#histo.GaussianFit(variable['mass'])
+         
+######################Falta#################################################
+
+# En la funcion/es de pintar, poder establecer los limites xmin, xmax, y el inumero de bines y la escala lineal o logaritmica desde el ejecutable principal.
+# Fit Breit Wigner
+
+#############################################################################
+
+	print("---Total time: %s seconds ---" % (time.time() - start_time))
+        
 	
 if __name__ == "__main__":
     main()
-
