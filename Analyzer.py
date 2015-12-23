@@ -197,7 +197,7 @@ class Analyzer(object):
 
 
 		# Save histograms for all muons in histos.root file
-		self.fhistos = ROOT.TFile("histos.root", "RECREATE")
+		self.fhistos = ROOT.TFile("files/histos.root", "RECREATE")
 
 		self.h_pt.Write()
 		self.h_px.Write()
@@ -219,7 +219,7 @@ class Analyzer(object):
                 self.fhistos.Close()
 
 		# Save histograms for selected muons in goodHistos.root file
-                self.ghistos = ROOT.TFile("goodHistos.root", "RECREATE")
+                self.ghistos = ROOT.TFile("files/goodHistos.root", "RECREATE")
 
                 self.g_pt.Write()
 		self.g_px.Write()
