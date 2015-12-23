@@ -14,8 +14,8 @@ def main ():
        
         # To start this exercise you must call different classes which make the analysis
 
-        #analysis=Analyzer()
-        #analysis.process()
+        analysis=Analyzer()
+        analysis.process()
 	histo=Histos()
 
 	# Here you have a dictionary with the main variables used in the analysis
@@ -32,7 +32,7 @@ def main ():
 	
         # Exercise 1:
 	# Choose which variables you want to draw in a  histogram and pass them as parameters
-	histo.drawHisto(variable['eta'], variable['pt'])
+	histo.drawHisto(variable['eta'])
 
         # Exercise 2:
 	# Now select the good muons. Try to find the right cut to approach the real Z event
@@ -41,7 +41,7 @@ def main ():
 
         # Check up drawing the new histos. Try to draw the same variable before and after the cut
 
-	#histo.drawSelHisto(variable['eta'], variable['mass'])
+	#histo.drawSelHisto(variable['mass'])
 	#histo.drawTwoHistos(variable['eta'])
 
         # Make the fits in the mass histogram

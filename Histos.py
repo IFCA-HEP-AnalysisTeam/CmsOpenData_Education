@@ -12,10 +12,10 @@ class Histos(object):
 	'''
 	def __init__(self):
 		'''
-		Constructor: only read the histograms from the both files
+		Constructor: read the histograms from the both files
 		'''
-		self.file=ROOT.TFile("histos.root","read")
-		self.Gfile=ROOT.TFile("goodHistos.root", "read")
+		self.file=ROOT.TFile("files/histos.root","read")
+		self.Gfile=ROOT.TFile("files/goodHistos.root", "read")
 		
 	#### bins and bounds?????
 
@@ -23,9 +23,9 @@ class Histos(object):
 		'''
 		DrawHisto function just prints the histograms for all muons 
 		'''
-                for i in args:
+		for i in args:
 			self.histo=self.file.Get('h_'+i)
-                        self.createCanvas(self.histo, 'h_'+i)
+                        self.createCanvas(self.histo, i)
 
 	def drawSelHisto(self, *args):
 		'''
@@ -33,7 +33,7 @@ class Histos(object):
 		'''
                 for i in args:
                         self.gHisto=self.Gfile.Get('g_'+i)
-                        self.createCanvas(self.gHisto, 'g_'+ i)
+                        self.createCanvas(self.gHisto, i)
 
 	def drawTwoHistos(self, *args): 
 		'''
@@ -44,10 +44,10 @@ class Histos(object):
 			if i != 'efficiency':
 				self.histo=self.file.Get('h_'+i)
                                 self.gHisto=self.Gfile.Get('g_'+i)
-                                self.createCanvas( self.histo, 'hg_'+i, self.gHisto)
+                                self.createCanvas( self.histo, i, self.gHisto)
 			else:
 				self.histo=self.Gfile.Get('h_'+i)
-				self.createCanvas( self.histo, 'h_'+i)
+				self.createCanvas( self.histo, i)
 		
 
 	def GaussianFit(self, histo):
@@ -61,7 +61,7 @@ class Histos(object):
 		gStyle.SetOptFit()
 		self.createCanvas(self.gHisto, 'fit_'+histo)
 
-	def createCanvas(self, histo, i=None, gHisto=None):
+	def createCanvas(self, histo, name=None, gHisto=None):
 		'''
 		Create Canvas for only all muons histogram or both histograms: all and selected muons 
 		'''
@@ -80,8 +80,7 @@ class Histos(object):
 		canvas.Draw()		
 
 		# Save Canvas in histos directory
-		canvas.SaveAs("$HOME/CmsOpendata/histos/"+ i +".png")
-
+		canvas.SaveAs("histos/"+ name +".png")
     		# ONLY WAY found to display and keep the canvas on screen
 		#ROOT.gApplication.Run()
 
