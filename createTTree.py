@@ -18,7 +18,7 @@ import ROOT as ROOT
 from DataFormats.FWLite import Events, Handle
 from Muon import Muon 
 
-class writeTTree(object):
+class createTTree(object):
 
 	def __init__(self, data_files):
 
@@ -38,7 +38,6 @@ class writeTTree(object):
                 self.Muon_py = ROOT.std.vector('float')()
                 self.Muon_pz = ROOT.std.vector('float')()
                 self.Muon_energy = ROOT.std.vector('float')()
-                self.Muon_vertex_z = ROOT.std.vector('float')()
                 self.Muon_isGlobalMuon = ROOT.std.vector('int')() 
                 self.Muon_isTrackerMuon = ROOT.std.vector('int')()
                 self.Muon_isStandAloneMuon = ROOT.std.vector('int')()
@@ -50,10 +49,18 @@ class writeTTree(object):
                 self.Muon_numberOfValidHits = ROOT.std.vector('int')()
                 self.Muon_normChi2 = ROOT.std.vector('float')()
                 self.Muon_charge = ROOT.std.vector('int')()
-
-                self.Vertex_Z = ROOT.std.vector('float')()
-
-
+		# distance in z axis between Primary vertex Z coordenate and muon's z vertex coordenate
+		self.Muon_distance = ROOT.std.vector('float')()
+	
+		self.Vertex_Z = 0.	
+		# Vectors for new branches
+		self.Muon_isStandAloneMuon = ROOT.std.vector('int')()
+		self.Muon_numOfMatches = ROOT.std.vector('int')() 
+		self.Muon_deltaPt = ROOT.std.vector('float')()
+		self.Muon_NValidHitsSATk = ROOT.std.vector('int')()
+		self.Muon_NValidHitsInTk = ROOT.std.vector('int')()
+		self.Muon_NValidPixelHitsnTk = ROOT.std.vector('int')()
+		
 	def getMuons(self, event):
 		"""
 		event: one element of self.events
@@ -94,11 +101,10 @@ class writeTTree(object):
                 self.tree.Branch("Muon_px", self.Muon_px)
                 self.tree.Branch("Muon_py", self.Muon_py)
                 self.tree.Branch("Muon_pz", self.Muon_pz)
-                self.tree.Branch("Muon_vertex_z", self.Muon_vertex_z)
                 self.tree.Branch("Muon_energy", self.Muon_energy)
                 self.tree.Branch("Muon_isGlobalMuon", self.Muon_isGlobalMuon)
 		self.tree.Branch("Muon_isTrackerMuon", self.Muon_isTrackerMuon)
-		self.tree.Branch("Muon_isStandAloneMuon", self.Muon_isStandAloneMuon)	
+		#self.tree.Branch("Muon_isStandAloneMuon", self.Muon_isStandAloneMuon)	
 		self.tree.Branch("Muon_dB", self.Muon_dB)
                 self.tree.Branch("Muon_edB", self.Muon_edB)
                 self.tree.Branch("Muon_isolation_sumPt", self.Muon_isolation_sumPt)
@@ -107,7 +113,15 @@ class writeTTree(object):
                 self.tree.Branch("Muon_numberOfValidHits", self.Muon_numberOfValidHits)
                 self.tree.Branch("Muon_normChi2", self.Muon_normChi2)
 		self.tree.Branch("Muon_charge", self.Muon_charge)
-		self.tree.Branch("Primary_Vertex_Z", self.Vertex_Z)
+		self.tree.Branch("Muon_distance",self.Muon_distance)
+		'''	
+		self.tree.Branch("Muon_isStandAloneMuon", self.Muon_isStandAloneMuon)
+		self.tree.Branch("Muon_numOfMatches", self.Muon_numOfMatches)
+		self.tree.Branch("Muon_deltaPt", self.Muon_deltaPt)
+		self.tree.Branch("Muon_NValidHitsSATk", self.Muon_NValidHitsSATk)
+		self.tree.Branch("Muon_NValidHitsInTk", self.Muon_NValidHitsInTk)
+		self.tree.Branch("Muon_NValidPixelHitsnTk", self.Muon_NValidPixelHitsnTk)
+		'''
 
 		for N, event in enumerate(self.events):
 
@@ -116,18 +130,17 @@ class writeTTree(object):
 
 			muons = self.getMuons(event)
 		 	vertex = self.getVertex(event)
+			self.Vertex_Z = vertex.z()
 
 
 			for i, muon in enumerate(muons): 
 				
-				self.Vertex_Z.push_back(vertex.z())
 				self.Muon_pt.push_back(muon.pt())
 				self.Muon_eta.push_back(muon.eta())
                                 self.Muon_px.push_back(muon.px())
                                 self.Muon_py.push_back(muon.py())
                                 self.Muon_pz.push_back(muon.pz())
                                 self.Muon_energy.push_back(muon.energy())
-                                self.Muon_vertex_z.push_back(muon.vertex().z())
                                 self.Muon_isGlobalMuon.push_back(muon.isGlobalMuon())
                                 self.Muon_isTrackerMuon.push_back(muon.isTrackerMuon())
                                 self.Muon_isStandAloneMuon.push_back(muon.isStandAloneMuon())
@@ -137,6 +150,10 @@ class writeTTree(object):
                                 self.Muon_isolation_emEt.push_back(muon.isolationR03().emEt)
                                 self.Muon_isolation_hadEt.push_back(muon.isolationR03().hadEt)
                                 self.Muon_charge.push_back(muon.charge())
+				self.Muon_distance.push_back(abs(muon.vertex().z()-self.Vertex_Z))			
+				#self.Muon_isStandAloneMuon.push_back(muon.isStandAloneMuon())
+				
+				#self.Muon_numOfMatches.push_back(muon.numberOfMatches())
 
 				if not muon.globalTrack().isNull():
 
@@ -146,7 +163,9 @@ class writeTTree(object):
 				else:
 					self.Muon_numberOfValidHits.push_back(-999)
                                         self.Muon_normChi2.push_back(-999)
-
+				
+				#if not muon.standAloneMuon.isNull():
+				#	self.Muon_NValidHitsSATK.push_back(muon.standAloneMuon().hitPattern().numberOfValidMuonHits())
 			
 			#Populate the tree
 			
@@ -161,7 +180,6 @@ class writeTTree(object):
 			self.Muon_py.clear()
 			self.Muon_pz.clear()
 			self.Muon_energy.clear()
-			self.Muon_vertex_z.clear()
 			self.Muon_isGlobalMuon.clear()
 			self.Muon_isTrackerMuon.clear()
 			self.Muon_dB.clear()
@@ -174,7 +192,8 @@ class writeTTree(object):
 			self.Muon_numberOfValidHits.clear()
                         self.Muon_normChi2.clear()
 
-			self.Vertex_Z.clear()
+			self.Muon_distance.clear()
+			self.Vertex_Z = 0.
 
 
 		print "Write"
