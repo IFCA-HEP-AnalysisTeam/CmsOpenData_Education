@@ -28,7 +28,7 @@ class createTTree(object):
 
 		self.events = Events(data_files)
 
-		self.f = ROOT.TFile("mytree.root","RECREATE")
+		self.f = ROOT.TFile("datafiles/mytree.root","RECREATE")
 		self.tree=ROOT.TTree("muons","muons tree")
 		
 		

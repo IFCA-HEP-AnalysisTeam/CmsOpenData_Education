@@ -1,22 +1,21 @@
 import ROOT as ROOT
 import sys
-import getopt
-from DataFormats.FWLite import Events, Handle
 from Histos import Histos
-from Analyzer import Analyzer
+#from Analyzer import Analyzer
 import time
 
 
-
+#from Analyzer_All import Analyzer
+from Analyzer_Selection import Analyzer
 def main ():
 
 	start_time = time.time()
        
         # To start this exercise you must call different classes which make the analysis
 
-        analysis=Analyzer()
-        analysis.process()
-	histo=Histos()
+	analysis=Analyzer()
+	analysis.process()
+#	histo=Histos()
 
 	# Here you have a dictionary with the main variables used in the analysis
 	variable = {
@@ -32,7 +31,7 @@ def main ():
 	
         # Exercise 1:
 	# Choose which variables you want to draw in a  histogram and pass them as parameters
-	histo.drawHisto(variable['eta'])
+#	histo.drawHisto(variable['eta'])
 
         # Exercise 2:
 	# Now select the good muons. Try to find the right cut to approach the real Z event
