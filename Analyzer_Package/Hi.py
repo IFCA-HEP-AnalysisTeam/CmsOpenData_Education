@@ -71,7 +71,7 @@ class Hi(object):
 					self.canvas.SaveAs("../output_histograms/"+ name +".png")                   
 				else: 
 		#			print "coge tupla" 
-					mylist[0].Draw()
+					mylist[0][0].Draw()
 					for j in range(1,len(mylist[i])):
 						mylist[i][j].Draw("same")
 						mylist[i][j].SetLineColor(5+j)
