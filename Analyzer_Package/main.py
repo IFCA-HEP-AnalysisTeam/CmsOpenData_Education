@@ -1,6 +1,7 @@
 import ROOT as ROOT
 import sys
 from Histos import Histos
+from Hi import Hi
 #from Analyzer import Analyzer
 import time
 
@@ -13,21 +14,24 @@ def main ():
        
         # To start this exercise you must call different classes which make the analysis
 
-	analysis=Analyzer()
-	analysis.process()
-#	histo=Histos()
+#	analysis=Analyzer()
+#	analysis.process()
+	hi=Hi()
+	
+#	hi.DrawHi('g_pt', ('h_pt', 'g_pt','h_eta'), 'h_mass')
 
+	hi.Setting('g_mass', 'set', scale = 'LogY', xlimits = (40,120), legend = True )
 	# Here you have a dictionary with the main variables used in the analysis
-	variable = {
-		'pt': 'pt',
-		'eta': 'eta',
-		'distance': 'distance',
-		'dB': 'dB',
-		'isolation':'isolation',
-		'mass':'mass',
-		'normChi2': 'normChi2',
-		'numValidHits': 'numValidHits',
-		'efficiency': 'efficiency'}
+#	variable = {
+#		'pt': 'pt',
+#		'eta': 'eta',
+#		'distance': 'distance',
+#		'dB': 'dB',
+#		'isolation':'isolation',
+#		'mass':'mass',
+#		'normChi2': 'normChi2',
+#		'numValidHits': 'numValidHits',
+#		'efficiency': 'efficiency'}
 	
         # Exercise 1:
 	# Choose which variables you want to draw in a  histogram and pass them as parameters
