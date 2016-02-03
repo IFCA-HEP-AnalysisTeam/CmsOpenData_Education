@@ -18,7 +18,7 @@ def main ():
 #	analysis.process()
 	hi=Hi()
 	
-#	hi.DrawHi('g_pt', ('h_pt', 'g_pt','h_eta'), 'h_mass')
+	hi.DrawHi('g_pt', ('h_pt', 'g_pt','h_eta'), 'h_mass')
 
 	hi.Setting('g_mass', 'set', scale = 'LogY', xlimits = (40,120), legend = True )
 	# Here you have a dictionary with the main variables used in the analysis

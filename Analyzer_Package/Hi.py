@@ -40,7 +40,7 @@ class Hi(object):
 						print ("This histogram does not exist")                        
 				elif type(i) == tuple:
 					self.mytuple=()                  
-					for j in range(len(i)):
+					for j in range(0,len(i)):
 						if 'h_' in i[j]:
 							self.histo=self.file.Get(i[j])
 							self.mytuple+=(self.histo,)
@@ -62,16 +62,16 @@ class Hi(object):
 			'''
 			Create and return a canvas. Set the legend configuration (because of Draw() function is returning self.histo or self.ghisto or 				both you can set the legend online )
 			'''
-			self.canvas = ROOT.TCanvas("", "", 800, 600)
-			self.canvas.cd()
+			#self.canvas = ROOT.TCanvas("", "", 800, 600)
+			#self.canvas.cd()
 			for i in range(0,len(mylist)):
 				if type(mylist[i]) != tuple:                   
 					mylist[i].Draw()
 					self.canvas.Draw()            
 					self.canvas.SaveAs("../output_histograms/"+ name +".png")                   
 				else: 
-		#			print "coge tupla" 
-					mylist[0][0].Draw()
+					print mylist[i][0] 
+					mylist[i][0].Draw()
 					for j in range(1,len(mylist[i])):
 						mylist[i][j].Draw("same")
 						mylist[i][j].SetLineColor(5+j)
@@ -81,49 +81,49 @@ class Hi(object):
 
 
              
-	def Setting(self, introvariable, saveName, **otros):
+	def Setting(self, histo_name, saveName, **otros):
 		'''
 		scaleY /scaleX : string parameter. Must be 'LogY' to draw log y axis and/or to draw log x axix
 		xmin,xmax,nbin,scaleY,scaleX,SetLegend
 		'''
-		retorno=self.DrawHi(introvariable)
+		self.DrawHi(histo_name)
 		claves=otros.keys()    
-		for ele in range(0,len(retorno[0])):
-			print "retorno[0]: ", retorno[0][0], "type:",type(retorno[0][0])
+		for i in range(0,len(self.mylist)):
+			#print "retorno[0]: ", retorno[0][0], "type:",type(retorno[0][0])
 			if 'scale' in claves:
 				s1=otros['scale']
 				if s1 == 'LogY':
-					retorno[1].SetLogy()
+					self.canvas.SetLogy()
 				elif s1 == 'LogX':
-					retorno[1].SetLogx()
+					self.canvas.SetLogx()
                     
 			if 'legend' in claves and otros['legend'] == True:          
 				legend =ROOT.TLegend(0.1,0.2,0.30,0.3)
-				if type(retorno[0][ele]) != tuple:
-					legend.AddEntry(retorno[0][ele],"All muons","l")
+				if type(self.mylist[i]) != tuple:
+					legend.AddEntry(self.mylist[i],"All muons","l")
 				else:
-					for j in range(0,len(retorno[0][ele])):
-						legend.AddEntry(retorno[0][ele][j],"All muons","l")
+					for j in range(0,len(self.mylist[i])):
+						legend.AddEntry(self.mylist[i][j],"All muons","l")
 						#legend.AddEntry(retorno[0][1],"Selected muons","l")
 				legend.Draw()
         
 			if 'xlimits' in claves:
 				xmin=otros['xlimits'][0]
 				xmax=otros['xlimits'][1]
-				if type(retorno[0][ele]) is not tuple:
-					retorno[0][ele].GetXaxis().SetRangeUser(xmin, xmax)
+				if type(self.mylist[i]) is not tuple:
+					self.mylist[i].GetXaxis().SetRangeUser(xmin, xmax)
 				else:
-					for j in range(len(retorno[0][ele])):
-						retorno[0][ele][j].GetXaxis().SetRangeUser(xmin, xmax)
+					for j in range(len(retorno[0][i])):
+						self.mylist[i][j].GetXaxis().SetRangeUser(xmin, xmax)
 
-		#if c == 'nbin':
-		#		s5=otros[c]
-		#		print s5
-		#		histo.Rebin(s5)
+			if 'nbin' in claves:
+				s5=otros['xlimits']
+				print s5
+				histo.Rebin(s5)
 
-		#else:
-		#	print("The parameter that you introduced is not correct")
-		self.CanvasCre(retorno[0], saveName)
+			#else:
+			#	print("The parameter that you introduced is not correct")
+		self.CanvasCre(self.mylist, saveName)
         
         
         
