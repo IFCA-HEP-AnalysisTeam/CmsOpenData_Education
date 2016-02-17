@@ -98,9 +98,13 @@ class Hi(object):
 					self.canvas.SetLogx()
                     
 			if 'legend' in claves and otros['legend'] == True:          
+	
+				print "Entra a leyenda"
 				legend =ROOT.TLegend(0.1,0.2,0.30,0.3)
+				print legend
 				if type(self.mylist[i]) != tuple:
 					legend.AddEntry(self.mylist[i],"All muons","l")
+					print "Anade el primer histo a la leyenda"
 				else:
 					for j in range(0,len(self.mylist[i])):
 						legend.AddEntry(self.mylist[i][j],"All muons","l")

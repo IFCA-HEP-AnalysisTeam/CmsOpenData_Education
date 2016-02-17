@@ -62,16 +62,27 @@ class Analyzer(object):
 
     def process(self, event):
 	'''Executed on every event'''
+<<<<<<< HEAD
 	pass
+=======
+
+>>>>>>> bf61997f2457635c63eb63e3051585cbac561fc4
 
     def endJob(self):
 
 	print "*** writing file",self.rootfilename
+<<<<<<< HEAD
         self.rootfilename.Write();
+=======
+
+        self.rootfilename.Write();
+
+>>>>>>> bf61997f2457635c63eb63e3051585cbac561fc4
         self.rootfile.Close();
 
         print "*** done"
 
+<<<<<<< HEAD
 
     ### DEFINE AND FILL HISTOGRAMS ### 
 
@@ -114,3 +125,5 @@ class Analyzer(object):
         self.h_isolation_hadEt.Fill(self.Muon_isolation_hadEt[muon])
 
 
+=======
+>>>>>>> bf61997f2457635c63eb63e3051585cbac561fc4
