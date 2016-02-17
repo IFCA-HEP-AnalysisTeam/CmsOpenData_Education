@@ -26,9 +26,9 @@ class AnalyzerSel(Analyzer):
 
     def endJob(self):
 
-	print "*** writing file",self.rootfilename
+	print "*** writing file",self.rootfile
 
-        self.rootfilename.Write();
+        self.rootfile.Write();
 
         self.rootfile.Close();
 
