@@ -8,29 +8,11 @@ class AnalyzerAll(Analyzer):
     """Analyzer class for all muons. 
 
     """
-    def __init__(self):
-	Analyzer.__init__(self)
-
-    def beginJob(self, parameters=None):
-	'''Executed before the first object comes in'''
-
-        print '*** Begin job'
-	#self.mainLogger.info( 'beginJob ')
-	# Create a file, in the custom Analyzers, where the histograms will be saved 
-	self.rootfile = ROOT.TFile("$HOME/CmsOpenData/Analyzer_Package/datafiles/histos.root", "RECREATE")	
-	self.DefineHistograms()
-
-    def DefineHistograms(self):
-	print '*** Histograms Defined: Only mass left'
-	Analyzer.DefineHistograms(self)
-
-	# Add histogram for the mass
-	self.h_mass=ROOT.TH1F('h_mass', 'Inv_mass',500, 0,200)
 
     def process(self, tree, event):
         '''Executed on every event'''
 	
-	print "Start the analysis"
+	#print "Start the analysis"
 	tree.GetEntry(event)
         # Get the particles in the event
 	for particle in range(self.Muon_pt.size()): 	
@@ -54,16 +36,5 @@ class AnalyzerAll(Analyzer):
                                                         # Fill the histogram for the mass
                                                         self.h_mass.Fill(mass)
 
-
-    def endJob(self):
-
-	print "*** writing file",self.rootfile
-
-	#Analyzer.WriteHistograms(self)
-	self.h_mass.Write()
-
-        self.rootfile.Write();
-        self.rootfile.Close();
-
-        print "*** done"
-
+    def getFile(self):
+	return self.rootfile

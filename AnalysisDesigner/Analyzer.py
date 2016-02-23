@@ -55,9 +55,7 @@ class Analyzer(object):
 
         print '*** Begin job'
 	#self.mainLogger.info( 'beginJob ')
-	# Create a file, in the custom Analyzers, where the histograms will be saved 
-	self.rootfile = ROOT.TFile("datafiles/histos.root", "RECREATE")	
-
+	pass
 
     def process(self, tree,event):
 	'''Executed on every event'''
@@ -65,10 +63,8 @@ class Analyzer(object):
 
     def endJob(self):
 
-	print "*** writing file",self.rootfile
-        self.rootfile.Write();
-        self.rootfile.Close();
-
+	print "*** writing file"
+	pass
         print "*** done"
 
 
