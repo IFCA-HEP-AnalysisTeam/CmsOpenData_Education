@@ -2,66 +2,58 @@ import os
 import logging
 import ROOT
 
-import Cuts as cuts
+from Cuts import Cuts
 
 class Selector(object):
 	''' Class that make the selection from a defined Cuts'''
-	def __init__(self):
-	    print '''***Selector create'''
+	#def __init__(self):
+	#    print '''***Selector created'''
 	    
-	def beginSelector(self):
-	    print ('***Start the analysis: Create the histogram for the efficiency')
-            self.ghistos = ROOT.TFile("datafiles/goodHistos.root", "write")
-            #self.h_efficiency=ROOT.TH1F('h_efficiency','efficiency',10,0,11)
 
+	def selector(self, analysis, particle):
+		cuts = Cuts()
 
-	def selector(self, particle, cuts):
 		'''Main class for making the selection'''
-		if not self.Muon_isGlobalMuon[particle]:
+		if not analysis.Muon_isGlobalMuon[particle]:
                         return False
-                self.h_efficiency.Fill(2)
+                analysis.h_efficiency.Fill(2)
 
-                if not self.Muon_isTrackerMuon[particle]:
+                if not analysis.Muon_isTrackerMuon[particle]:
                         return False
-                self.h_efficiency.Fill(3)
+                analysis.h_efficiency.Fill(3)
 
-                if self.Muon_pt [particle] < cuts.pt_min:
+                if analysis.Muon_pt [particle] < cuts.pt_min:
                         return False
-                self.h_efficiency.Fill(4)
+                analysis.h_efficiency.Fill(4)
 
-                if self.Muon_eta[particle] > cuts.eta_max:
+                if analysis.Muon_eta[particle] > cuts.eta_max:
                         return False
-                self.h_efficiency.Fill(5)
+                analysis.h_efficiency.Fill(5)
 
-                if self.Muon_dB[particle] > cuts.dB_max:
-                        return False
-
-                self.h_efficiency.Fill(6)
-
-                if ((self.Muon_isolation_sumPt[particle]+self.Muon_isolation_emEt[particle]+self.Muon_isolation_hadEt[particle])/self.Muon_pt[particle]) > cuts.isolation:
-                        return False
-                self.h_efficiency.Fill(7)
-
-                if self.Muon_distance[particle] > cuts.distance:
+                if analysis.Muon_dB[particle] > cuts.dB_max:
                         return False
 
-                self.h_efficiency.Fill(8)
+                analysis.h_efficiency.Fill(6)
 
-                if self.Muon_normChi2[particle] > cuts.normChi2:
+                if ((analysis.Muon_isolation_sumPt[particle]+analysis.Muon_isolation_emEt[particle]+analysis.Muon_isolation_hadEt[particle])/analysis.Muon_pt[particle]) > cuts.isolation:
+                        return False
+                analysis.h_efficiency.Fill(7)
+
+                if analysis.Muon_distance[particle] > cuts.distance:
                         return False
 
-                self.h_efficiency.Fill(9)
+                analysis.h_efficiency.Fill(8)
 
-                if self.Muon_numberOfValidHits[particle] < cuts.numValidHits:
+                if analysis.Muon_normChi2[particle] > cuts.normChi2:
                         return False
 
-                self.h_efficiency.Fill(10)
+                analysis.h_efficiency.Fill(9)
+
+                if analysis.Muon_numberOfValidHits[particle] < cuts.numValidHits:
+                        return False
+
+                analysis.h_efficiency.Fill(10)
 
                 return True
 
-	def endSelector(self):
-		print '*** Selection finished'
-		#self.h_efficiency.Write()
-                #self.ghistos.Close()
-                print "Histogram for the efficiency saved in datafiles/goodHistos.root file"
 

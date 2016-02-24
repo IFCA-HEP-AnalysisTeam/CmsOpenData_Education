@@ -50,12 +50,12 @@ class Analyzer(object):
         # print self.mainLogger.handlers
         #self.beginLoopCalled = False
 
-    def beginJob(self, parameters=None):
+    def beginJob(self, name):
 	'''Executed before the first object comes in'''
 
         print '*** Begin job'
-	#self.mainLogger.info( 'beginJob ')
-	pass
+	self.DefineHistograms()
+	self.rootfile= ROOT.TFile("datafiles/histos.root", "RECREATE") 
 
     def process(self, tree,event):
 	'''Executed on every event'''
@@ -63,9 +63,10 @@ class Analyzer(object):
 
     def endJob(self):
 
-	print "*** writing file"
-	pass
-        print "*** done"
+	print "*** writing file", self.rootfile
+        self.WriteHistograms()
+	self.rootfile.Close()
+	print "*** done"
 
 
     ### DEFINE AND FILL HISTOGRAMS ### 
@@ -89,6 +90,8 @@ class Analyzer(object):
         self.h_isolation_sumPt=ROOT.TH1F('h_isolation_sumPt','IsolationX',50, -300,300)
         self.h_isolation_emEt=ROOT.TH1F('h_isolation_emEt','IsolationX',50, -300,300)
         self.h_isolation_hadEt=ROOT.TH1F('h_isolation_hadEt','IsolationX',50, -300,300)
+	self.h_mass=ROOT.TH1F('h_mass', 'MassInv', 50, -300, 300)
+
 
     def FillHistograms(self, particle):
 	'''Function that fill the histograms for each variable and particle in the event'''
@@ -124,3 +127,4 @@ class Analyzer(object):
         self.h_isolation_sumPt.Write()
         self.h_isolation_emEt.Write()
         self.h_isolation_hadEt.Write()
+	self.h_mass.Write()

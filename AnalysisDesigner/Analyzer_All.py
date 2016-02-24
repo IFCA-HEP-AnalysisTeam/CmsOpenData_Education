@@ -14,11 +14,11 @@ class AnalyzerAll(Analyzer):
 	
 	#print "Start the analysis"
 	tree.GetEntry(event)
+	print self.Muon_pt
         # Get the particles in the event
 	for particle in range(self.Muon_pt.size()): 	
 	# Fill histograms for each particle variable
-		Analyzer.FillHistograms(particle)
-		
+		Analyzer.FillHistograms(self, particle)
 		# Get the mass. ONLY if the events has more than 1 muon
 		if (self.Muon_pt.size())>1:
 		    for j in range (particle+1,self.Muon_pt.size()):
@@ -36,5 +36,3 @@ class AnalyzerAll(Analyzer):
                                                         # Fill the histogram for the mass
                                                         self.h_mass.Fill(mass)
 
-    def getFile(self):
-	return self.rootfile

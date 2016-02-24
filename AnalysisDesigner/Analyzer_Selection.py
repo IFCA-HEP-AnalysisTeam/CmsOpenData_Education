@@ -4,35 +4,20 @@ import ROOT
 
 from Analyzer import Analyzer
 from Selector import Selector
-from Cuts import Cuts
 
 class AnalyzerSel(Analyzer):
     """Selection Analyzer class. 
-
-
-
     The custom analyzers should inherit from this class
     """
-    def beginJob(self, parameters=None):
-	'''Executed before the first object comes in'''
-
-        print '*** Begin job'
-	#self.mainLogger.info( 'beginJob ')
-	# Create a file, in the custom Analyzers, where the histograms will be saved 
-	self.rootfile = ROOT.TFile("datafiles/goodHistos.root", "RECREATE")
-	self.DefineHistograms()
-
-	
     def DefineHistograms(self):
-        Analyzer.DefineHistograms()
+        Analyzer.DefineHistograms(self)
         #Add histograms for the mass and efficiency
-	self.h_mass=ROOT.TH1F('h_mass', 'Inv_mass',500, 0,200)
         self.h_efficiency=ROOT.TH1F('h_efficiency','efficiency',10,0,11)
 
-    def process(self, event):
+    def process(self, tree, event):
 	'''Executed on every event'''
-	self.tree.GetEntry(event)
-	
+	tree.GetEntry(event)
+	selec = Selector()
 	for particle in range(0,self.Muon_pt.size()):
                         # Fill the histogram for each variable
                                 self.h_efficiency.Fill(1)
@@ -52,25 +37,20 @@ class AnalyzerSel(Analyzer):
                                                         #print mass
 
                                                         # If the both muons are selected between the cuts fill the histogram 
-                                        if Selector.selector(particle, cuts) and Selector.selector(j, cuts):
-                                                self.h_mass.Fill(mass)
+                                        		if selec.selector(self,particle) and selec.selector(self, j):
+								self.h_mass.Fill(mass)
+				print "Selection for mass finished" 
 
 				# Apply the selection over all particles in the event calling the selector function and fill the histograms for each variable
-                                if Selector.selector(particle, Cuts()):
-					Analyzer.FillHistograms(particle)
+                                if selec.selector(self, particle):
+					self.FillHistograms( particle)
+
 	print '***Selection finished'					
 
 
     def endJob(self):
 
-	print "*** writing file",self.rootfile
+	self.h_efficiency.Write()
+	Analyzer.endJob(self)
 
-	Analyzer.WriteHistograms()
-	h_mass.Write()
-	h_efficiency.Write()
-
-        #self.rootfile.Write();
-        self.rootfile.Close();
-
-        print "*** done"
 
