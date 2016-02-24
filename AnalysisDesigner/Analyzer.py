@@ -55,7 +55,7 @@ class Analyzer(object):
 
         print '*** Begin job'
 	self.DefineHistograms()
-	self.rootfile= ROOT.TFile("datafiles/histos.root", "RECREATE") 
+	self.rootfile= ROOT.TFile("datafiles/"+name, "RECREATE") 
 
     def process(self, tree,event):
 	'''Executed on every event'''

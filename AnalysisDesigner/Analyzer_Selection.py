@@ -37,15 +37,13 @@ class AnalyzerSel(Analyzer):
                                                         #print mass
 
                                                         # If the both muons are selected between the cuts fill the histogram 
-                                        		if selec.selector(self,particle) and selec.selector(self, j):
+		                                        if selec.selector(self,particle) and selec.selector(self, j):
 								self.h_mass.Fill(mass)
-				print "Selection for mass finished" 
 
 				# Apply the selection over all particles in the event calling the selector function and fill the histograms for each variable
                                 if selec.selector(self, particle):
 					self.FillHistograms( particle)
 
-	print '***Selection finished'					
 
 
     def endJob(self):

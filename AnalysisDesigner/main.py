@@ -12,7 +12,7 @@ else:
     print "The Tree file does not exist in the folder"
 
 tree = file.Get("muons") 
-analysis = AnalyzerSel()
+analysis = AnalyzerAll()
 tree.SetBranchAddress("Muon_pt", analysis.Muon_pt)
 tree.SetBranchAddress("Muon_px", analysis.Muon_px)
 tree.SetBranchAddress("Muon_py", analysis.Muon_py)
@@ -40,7 +40,5 @@ analysis.beginJob("histos.root")
 print "Start the Analysis"
 # For each event or entry,the following loop populates the tree branches, creates every muon and add it to all_muons list
 for event in range(0, numEntries):
-
-	print "Proccess every event"
 	analysis.process(tree, event)
 analysis.endJob()
