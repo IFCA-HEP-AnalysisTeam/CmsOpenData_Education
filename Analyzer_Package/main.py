@@ -1,7 +1,7 @@
 import ROOT as ROOT
 import sys
 from Histos import Histos
-from Hi import Hi
+#from Hi import Hi
 #from Analyzer import Analyzer
 import time
 
@@ -16,11 +16,11 @@ def main ():
 
 #	analysis=Analyzer()
 #	analysis.process()
-	hi=Hi()
+	histos=Histos()
 	
-	hi.DrawHi('g_pt', ('h_pt', 'g_pt','h_eta'), 'h_mass')
+#	histos.DrawHi('g_pt', ('h_pt', 'g_pt','h_eta'), 'h_mass')
 
-	hi.Setting('g_mass', 'set', scale = 'LogY', xlimits = (40,120), legend = True )
+	histos.Setting('probe',('h_distance','h_pt'), xlimits = (30,100))
 	# Here you have a dictionary with the main variables used in the analysis
 #	variable = {
 #		'pt': 'pt',
@@ -48,7 +48,8 @@ def main ():
 	#histo.drawTwoHistos(variable['eta'])
 
         # Make the fits in the mass histogram
-	#histo.GaussianFit(variable['mass'])
+	histos.GaussianFit('mass')
+	histos.BreitWignerFit('mass')
          
 ######################Falta#################################################
 
