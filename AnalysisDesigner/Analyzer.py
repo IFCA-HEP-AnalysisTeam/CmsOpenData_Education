@@ -64,21 +64,10 @@ class Analyzer(object):
 
     def endJob(self):
 
-<<<<<<< HEAD
 	print "*** writing file", self.rootfile
         self.WriteHistograms()
 	self.rootfile.Close()
 	print "*** done"
-=======
-	print "*** writing file",self.rootfilename
-        self.rootfilename.Write();
-
-        self.rootfilename.Write();
-
-        self.rootfile.Close();
-
-        print "*** done"
->>>>>>> master
 
 
     ### DEFINE AND FILL HISTOGRAMS ### 
