@@ -1,12 +1,13 @@
 import os
 import logging
+import ROOT
 
 class Analyzer(object):
     """Base Analyzer class. 
 
     The custom analyzers should inherit from this class
     """
-    def __init__(self, cfg_ana, cfg_comp, looperName ):
+    def __init__(self):
         """Create an analyzer.
         Parameters (also stored as attributes for later use):
         cfg_ana: configuration parameters for this analyzer (e.g. a pt cut)
@@ -15,10 +16,10 @@ class Analyzer(object):
         Attributes:
         dirName : analyzer directory, where you can write anything you want
         """
-	self.file = ROOT.gROOT.GetListOfFiles().FindObject("mytree.root")
-        if not self.file or not file.IsOpen():
-            self.file = ROOT.TFile("datafiles/mytree.root", "read")
-        self.tree = self.file.Get("muons")
+	#self.file = ROOT.gROOT.GetListOfFiles().FindObject("mytree.root")
+        #if not self.file or not file.IsOpen():
+        #    self.file = ROOT.TFile("datafiles/mytree.root", "read")
+        #self.tree = self.file.Get("muons")
 
 	#  Define and init the variables for each branch as ROOT vectors
 	self.Muon_pt = ROOT.std.vector('float')()
@@ -38,11 +39,9 @@ class Analyzer(object):
         self.Muon_numberOfValidHits = ROOT.std.vector('int')()
         self.Muon_normChi2 = ROOT.std.vector('float')()
         self.Muon_charge = ROOT.std.vector('int')()
-	
 	# Create a directory for this Analyzer
-       	self.dirName = self.looperName
-        self.dirName = '/'.join( [self.name] )
-        os.mkdir( self.dirName )
+        #self.dirName = '/'.join( [type(self).__name__] )
+        #os.mkdir( self.dirName )
 
 
         # this is the main logger corresponding to the looper.
@@ -51,22 +50,26 @@ class Analyzer(object):
         # print self.mainLogger.handlers
         #self.beginLoopCalled = False
 
-    def beginJob(self, parameters=None):
+    def beginJob(self, name):
 	'''Executed before the first object comes in'''
 
         print '*** Begin job'
-	#self.mainLogger.info( 'beginJob ')
-	# Create a file, in the custom Analyzers, where the histograms will be saved 
-	self.rootfile = ROOT.TFile("datafiles/histos.root", "RECREATE")	
+	self.DefineHistograms()
+	self.rootfile= ROOT.TFile("datafiles/"+name, "RECREATE") 
 
-
-    def process(self, event):
+    def process(self, tree,event):
 	'''Executed on every event'''
 	pass
 
 
     def endJob(self):
 
+<<<<<<< HEAD
+	print "*** writing file", self.rootfile
+        self.WriteHistograms()
+	self.rootfile.Close()
+	print "*** done"
+=======
 	print "*** writing file",self.rootfilename
         self.rootfilename.Write();
 
@@ -75,11 +78,12 @@ class Analyzer(object):
         self.rootfile.Close();
 
         print "*** done"
+>>>>>>> master
 
 
     ### DEFINE AND FILL HISTOGRAMS ### 
 
-    def define_Histograms(self):
+    def DefineHistograms(self):
 	'''Function that define the histograms for all and selected analyzers'''
 	# Define and init the histograms for each branch as a TH1F object from ROOT
 
@@ -98,10 +102,11 @@ class Analyzer(object):
         self.h_isolation_sumPt=ROOT.TH1F('h_isolation_sumPt','IsolationX',50, -300,300)
         self.h_isolation_emEt=ROOT.TH1F('h_isolation_emEt','IsolationX',50, -300,300)
         self.h_isolation_hadEt=ROOT.TH1F('h_isolation_hadEt','IsolationX',50, -300,300)
-        self.h_mass=ROOT.TH1F('h_mass', 'Inv_mass',500, 0,200)
+	self.h_mass=ROOT.TH1F('h_mass', 'MassInv', 50, -300, 300)
+
 
     def FillHistograms(self, particle):
-	'''Function that fill the histograms for each variable and particle in the event''''
+	'''Function that fill the histograms for each variable and particle in the event'''
 	self.h_pt.Fill(self.Muon_pt[particle])
         self.h_px.Fill(self.Muon_px[particle])
         self.h_py.Fill(self.Muon_py[particle])
@@ -113,8 +118,25 @@ class Analyzer(object):
         self.h_normChi2.Fill(self.Muon_normChi2[particle])
         self.h_numberOfValidHits.Fill(self.Muon_numberOfValidHits[particle])
        	self.h_dB.Fill(self.Muon_dB[particle])
-        self.h_isolation_sumPt.Fill(self.Muon_isolation_sumPt[muon])
-       	self.h_isolation_emEt.Fill(self.Muon_isolation_emEt[muon])
-        self.h_isolation_hadEt.Fill(self.Muon_isolation_hadEt[muon])
+        self.h_isolation_sumPt.Fill(self.Muon_isolation_sumPt[particle])
+       	self.h_isolation_emEt.Fill(self.Muon_isolation_emEt[particle])
+        self.h_isolation_hadEt.Fill(self.Muon_isolation_hadEt[particle])
 
-
+    def WriteHistograms(self):
+        '''Function to write Histograms: Neither mass nor efficiency
+	Add here the histograms to print'''
+	self.h_pt.Write()
+        self.h_px.Write()
+        self.h_py.Write()
+        self.h_pz.Write()
+        self.h_eta.Write()
+        self.h_energy.Write()
+        self.h_distance.Write()
+        self.h_charge.Write()
+        self.h_normChi2.Write()
+        self.h_numberOfValidHits.Write()
+        self.h_dB.Write()
+        self.h_isolation_sumPt.Write()
+        self.h_isolation_emEt.Write()
+        self.h_isolation_hadEt.Write()
+	self.h_mass.Write()
