@@ -91,7 +91,7 @@ class Analyzer(object):
         self.h_isolation_sumPt=ROOT.TH1F('h_isolation_sumPt','IsolationX',50, -300,300)
         self.h_isolation_emEt=ROOT.TH1F('h_isolation_emEt','IsolationX',50, -300,300)
         self.h_isolation_hadEt=ROOT.TH1F('h_isolation_hadEt','IsolationX',50, -300,300)
-	self.h_mass=ROOT.TH1F('h_mass', 'MassInv', 50, -300, 300)
+	self.h_mass=ROOT.TH1F('h_mass', 'MassInv', 90, 0, 300)
 
 
     def FillHistograms(self, particle):
