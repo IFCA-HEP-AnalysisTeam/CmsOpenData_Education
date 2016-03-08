@@ -8,12 +8,15 @@ class AnalyzerAll(Analyzer):
     """Analyzer class for all muons. 
 
     """
+    # Get the number of entries(events) of the TTree (file.root)
+#    numEntries= tree.GetEntries()
 
-    def process(self, tree, event):
+
+    def process(self, event):
         '''Executed on every event'''
 	
 	#print "Start the analysis"
-	tree.GetEntry(event)
+	self.tree.GetEntry(event)
         # Get the particles in the event
 	for particle in range(self.Muon_pt.size()): 	
 	# Fill histograms for each particle variable
@@ -34,3 +37,4 @@ class AnalyzerAll(Analyzer):
                                                         #print mass
                                                         # Fill the histogram for the mass
                                                         self.h_mass.Fill(mass)
+

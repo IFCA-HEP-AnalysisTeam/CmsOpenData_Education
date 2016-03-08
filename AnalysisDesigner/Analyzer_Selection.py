@@ -14,9 +14,9 @@ class AnalyzerSel(Analyzer):
         #Add histograms for the mass and efficiency
         self.h_efficiency=ROOT.TH1F('h_efficiency','efficiency',10,0,11)
 
-    def process(self, tree, event):
+    def process(self, event):
 	'''Executed on every event'''
-	tree.GetEntry(event)
+	self.tree.GetEntry(event)
 	selec = Selector()
 	for particle in range(0,self.Muon_pt.size()):
                         # Fill the histogram for each variable
@@ -50,5 +50,3 @@ class AnalyzerSel(Analyzer):
 
 	self.h_efficiency.Write()
 	Analyzer.endJob(self)
-
-

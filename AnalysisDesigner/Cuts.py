@@ -1,4 +1,3 @@
-
 class Cuts(object):
 	def __init__(self, pt_min = 5, eta_max = 2.4, distance = 0.2, dB_max = 0.02, isolation = 0.15, mass_min = 60, chi2 = 10, numValidHits = 10):
 
@@ -12,6 +11,3 @@ class Cuts(object):
                 self.mass_min = mass_min
                 self.normChi2 = chi2
                 self.numValidHits = numValidHits
-
-
-

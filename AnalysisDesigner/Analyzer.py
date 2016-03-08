@@ -21,24 +21,15 @@ class Analyzer(object):
         #    self.file = ROOT.TFile("datafiles/mytree.root", "read")
         #self.tree = self.file.Get("muons")
 
-	#  Define and init the variables for each branch as ROOT vectors
-	self.Muon_pt = ROOT.std.vector('float')()
-        self.Muon_px= ROOT.std.vector('float')()
-        self.Muon_py= ROOT.std.vector('float')()
-        self.Muon_pz= ROOT.std.vector('float')()
-        self.Muon_eta = ROOT.std.vector('float')()
-        self.Muon_energy = ROOT.std.vector('float')()
-        self.Muon_distance = ROOT.std.vector('float')()
-        self.Muon_dB = ROOT.std.vector('float')()
-        self.Muon_edB = ROOT.std.vector('float')()
-        self.Muon_isolation_sumPt = ROOT.std.vector('float')()
-        self.Muon_isolation_emEt = ROOT.std.vector('float')()
-        self.Muon_isolation_hadEt = ROOT.std.vector('float')()
-        self.Muon_isGlobalMuon = ROOT.std.vector('int')()
-        self.Muon_isTrackerMuon = ROOT.std.vector('int')()
-        self.Muon_numberOfValidHits = ROOT.std.vector('int')()
-        self.Muon_normChi2 = ROOT.std.vector('float')()
-        self.Muon_charge = ROOT.std.vector('int')()
+        self.file = ROOT.gROOT.GetListOfFiles().FindObject("mytree.root")
+        if not self.file or not self.file.IsOpen():
+            self.file = ROOT.TFile("datafiles/mytree.root", "read")
+        self.tree = self.file.Get("muons")
+        
+        # Get the number of entries(events) of the TTree (file.root)
+	self.numEntries=self.tree.GetEntries()
+	self.Setup(self.tree)
+
 	# Create a directory for this Analyzer
         #self.dirName = '/'.join( [type(self).__name__] )
         #os.mkdir( self.dirName )
@@ -57,7 +48,7 @@ class Analyzer(object):
 	self.DefineHistograms()
 	self.rootfile= ROOT.TFile("datafiles/"+name, "RECREATE") 
 
-    def process(self, tree,event):
+    def process(self, event):
 	'''Executed on every event'''
 	pass
 
@@ -68,6 +59,46 @@ class Analyzer(object):
         self.WriteHistograms()
 	self.rootfile.Close()
 	print "*** done"
+
+    def Setup(self, tree):
+
+	self.Muon_pt = ROOT.std.vector('float')()
+        self.Muon_px= ROOT.std.vector('float')()
+        self.Muon_py= ROOT.std.vector('float')()
+        self.Muon_pz= ROOT.std.vector('float')()
+        self.Muon_eta = ROOT.std.vector('float')()
+        self.Muon_energy = ROOT.std.vector('float')()
+        self.Muon_distance = ROOT.std.vector('float')()
+        self.Muon_dB = ROOT.std.vector('float')()
+        self.Muon_edB = ROOT.std.vector('float')()
+        self.Muon_isolation_sumPt = ROOT.std.vector('float')()
+        self.Muon_isolation_emEt = ROOT.std.vector('float')()
+        self.Muon_isolation_hadEt = ROOT.std.vector('float')()
+        self.Muon_isGlobalMuon = ROOT.std.vector('int')()
+        self.Muon_isTrackerMuon = ROOT.std.vector('int')()
+        self.Muon_numberOfValidHits = ROOT.std.vector('int')()
+        self.Muon_normChi2 = ROOT.std.vector('float')()
+        self.Muon_charge = ROOT.std.vector('int')()
+
+        tree.SetBranchAddress("Muon_pt", self.Muon_pt)
+        tree.SetBranchAddress("Muon_px", self.Muon_px)
+        tree.SetBranchAddress("Muon_py", self.Muon_py)
+        tree.SetBranchAddress("Muon_pz", self.Muon_pz)
+        tree.SetBranchAddress("Muon_eta", self.Muon_eta)
+        tree.SetBranchAddress("Muon_energy", self.Muon_energy)
+        tree.SetBranchAddress("Muon_distance", self.Muon_distance)
+        tree.SetBranchAddress("Muon_dB", self.Muon_dB)
+        tree.SetBranchAddress("Muon_edB", self.Muon_edB)
+        tree.SetBranchAddress("Muon_isolation_sumPt", self.Muon_isolation_sumPt )
+        tree.SetBranchAddress("Muon_isolation_emEt", self.Muon_isolation_emEt )
+        tree.SetBranchAddress("Muon_isolation_hadEt", self.Muon_isolation_hadEt)
+        tree.SetBranchAddress("Muon_isGlobalMuon", self.Muon_isGlobalMuon)
+        tree.SetBranchAddress("Muon_isTrackerMuon", self.Muon_isTrackerMuon)
+        tree.SetBranchAddress("Muon_numberOfValidHits", self.Muon_numberOfValidHits)
+        tree.SetBranchAddress("Muon_normChi2", self.Muon_normChi2)
+        tree.SetBranchAddress("Muon_charge", self.Muon_charge)
+
+
 
 
     ### DEFINE AND FILL HISTOGRAMS ### 
