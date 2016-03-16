@@ -147,37 +147,10 @@ class createTTree(object):
 				
 				# DISTANCE
 				self.Muon_distance.push_back(abs(muon.vertex().z()-self.Vertex_Z))			
-				
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+	
 				self.Muon_numOfMatches.push_back(muon.numberOfMatches())
                 
                 
-                
-                
-***  self.Muon_NValidHitsSATk.push_back(muon.standAloneMuon().hitPattern().numberOfValidMuonHits())
-*** Muon_NValidHitsInTk      -->         innerTrack()->hitPattern().numberOfValidTrackerHits()
-*** Muon_NValidPixelHitsnTk  -->         innerTrack()->hitPattern().numberOfValidPixelHits();
-
-// deberia funcionar! 
-muon.dxy()
-muon.dz()
-
-Muon_deltaPt   --> innerTrack()->ptError()
-
-
-
-=======
-				self.Muon_NValidHitsSATk.push_back(muon.isStandAloneMuon().hitPattern().numberOfValidHits())
-=======
-				#self.Muon_NValidHitsSATk.push_back(muon.standAloneMuon().hitPattern().numberOfValidHits())
->>>>>>> 3fec63ee5a861b0fac792a8005d7d0a443dea723
-=======
->>>>>>> fd4094a2e81bad047bf6741c32b5bb9580e52e4f
-				self.Muon_numOfMatches.push_back(muon.numberOfMatches())
-				
->>>>>>> c154f10fca101647be99ac8c4654c75f30bb3cd8
 				if not muon.globalTrack().isNull():
 
                                         self.Muon_numberOfValidHits.push_back(muon.numberOfValidHits())
