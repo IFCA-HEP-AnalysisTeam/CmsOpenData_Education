@@ -81,9 +81,10 @@ class createTTree(object):
 
         def process(self, maxEv = -1):
                 """
-                
+                Create the tree branches and associated them to the particles variables created in the init function. 
+                Process the events and fill the tree 
                 maxEv: maximum number of processed events
-		       maxEv=-1 runs over all the events
+                      maxEv=-1 runs over all the events
                 
                 """
 
