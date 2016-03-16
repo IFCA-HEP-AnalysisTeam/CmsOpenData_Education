@@ -6,17 +6,8 @@
 #
 # Returns: 
 
-
-__author__ = "Palmerina Gonzalez Izquierdo"
-__copyright__ = "Copyright (C) 5015 Palmerina G. I."
-__license__ = "Public Domain"
-__version__ = "2.0"
-__maintainer__ = "Palmerina Gonzalez"
-__email__ = "pgi25@alumnos.unican.es"
-
 import ROOT as ROOT
 from DataFormats.FWLite import Events, Handle
-from Muon import Muon 
 
 class createTTree(object):
 
@@ -153,7 +144,7 @@ class createTTree(object):
 				# DISTANCE
 				self.Muon_distance.push_back(abs(muon.vertex().z()-self.Vertex_Z))			
 				
-				self.Muon_NValidHitsSATk.push_back(muon.isStandAloneMuon().hitPattern().numberOfValidHits())
+				#self.Muon_NValidHitsSATk.push_back(muon.standAloneMuon().hitPattern().numberOfValidHits())
 				self.Muon_numOfMatches.push_back(muon.numberOfMatches())
 				
 				if not muon.globalTrack().isNull():
@@ -161,9 +152,12 @@ class createTTree(object):
                                         self.Muon_numberOfValidHits.push_back(muon.numberOfValidHits())
                                         self.Muon_normChi2.push_back(muon.normChi2())
 			
-					if not muon.innerTrack.isNull():
-						self.Muon_NValidHitsInTk.push_back(muon.innerTrack().hitPattern().numberOfValidTrackerHits())
-						self.Muon_NValidPixelHitsnTk.push_back(muon.innerTrack().hitPattern().numberOfValidPixelHits()) 
+					# Next lines does not work -> The function numberOfValidTrackerHits does not exist for this DATA
+					#if not muon.innerTrack().isNull():
+					#	print muon.innerTrack()	
+					#	#self.Muon_NValidHitsInTk.push_back(muon.innerTrack().hitPattern())
+					#	self.Muon_NValidHitsInTk.push_back(muon.innerTrack().hitPattern().numberOfValidTrackerHits())
+					#	self.Muon_NValidPixelHitsnTk.push_back(muon.innerTrack().hitPattern().numberOfValidPixelHits()) 
 
 				else:
 					self.Muon_numberOfValidHits.push_back(-999)
@@ -185,6 +179,7 @@ class createTTree(object):
 			self.Muon_py.clear()
 			self.Muon_pz.clear()
 			self.Muon_energy.clear()
+			self.Muon_isStandAloneMuon.clear()
 			self.Muon_isGlobalMuon.clear()
 			self.Muon_isTrackerMuon.clear()
 			self.Muon_dB.clear()
@@ -193,6 +188,9 @@ class createTTree(object):
 			self.Muon_isolation_emEt.clear()
 			self.Muon_isolation_hadEt.clear()
 			self.Muon_charge.clear()
+
+			self.Muon_NValidHitsSATk.clear()
+			self.Muon_numOfMatches.clear()
 
 			self.Muon_numberOfValidHits.clear()
                         self.Muon_normChi2.clear()
