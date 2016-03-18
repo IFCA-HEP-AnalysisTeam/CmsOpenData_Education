@@ -77,11 +77,13 @@ class Analyzer(object):
         self.Muon_isolation_emEt = ROOT.std.vector('float')()
         self.Muon_isolation_hadEt = ROOT.std.vector('float')()
         self.Muon_isGlobalMuon = ROOT.std.vector('int')()
+        self.Muon_isStandAloneMuon = ROOT.std.vector('int')()
         self.Muon_isTrackerMuon = ROOT.std.vector('int')()
         self.Muon_numberOfValidHits = ROOT.std.vector('int')()
+        self.Muon_numOfMatches= ROOT.std.vector('int')()
+        self.Muon_NValidHitsSATk= ROOT.std.vector('int')()
         self.Muon_normChi2 = ROOT.std.vector('float')()
         self.Muon_charge = ROOT.std.vector('int')()
-    #  self.Muon_numOfMatches = ROOT.std.vector('int')()
         
         tree.SetBranchAddress("Muon_pt", self.Muon_pt)
         tree.SetBranchAddress("Muon_px", self.Muon_px)
@@ -95,10 +97,12 @@ class Analyzer(object):
         tree.SetBranchAddress("Muon_isolation_sumPt", self.Muon_isolation_sumPt )
         tree.SetBranchAddress("Muon_isolation_emEt", self.Muon_isolation_emEt )
         tree.SetBranchAddress("Muon_isolation_hadEt", self.Muon_isolation_hadEt)
-        
         tree.SetBranchAddress("Muon_isGlobalMuon", self.Muon_isGlobalMuon)
+        tree.SetBranchAddress("Muon_isStandAloneMuon", self.Muon_isStandAloneMuon)
         tree.SetBranchAddress("Muon_isTrackerMuon", self.Muon_isTrackerMuon)
         tree.SetBranchAddress("Muon_numberOfValidHits", self.Muon_numberOfValidHits)
+        tree.SetBranchAddress("Muon_numOfMatches", self.Muon_numOfMatches) 
+        tree.SetBranchAddress("Muon_NValidHitsSATk", self.Muon_NValidHitsSATk)     
         tree.SetBranchAddress("Muon_normChi2", self.Muon_normChi2)
         tree.SetBranchAddress("Muon_charge", self.Muon_charge)
     
@@ -112,6 +116,7 @@ class Analyzer(object):
 	'''Function that define the histograms for all and selected analyzers'''
 	# Define and init the histograms for each branch as a TH1F object from ROOT
 
+        self.h_MuonType=ROOT.TH1F('h_type', 'Number of Muons', 4, 1, 5)
         self.h_pt=ROOT.TH1F( 'h_pt', 'Muons Transverse Momentun', 50, 0, 200 )
         self.h_px=ROOT.TH1F( 'h_px', 'Muons x- Momentun', 50, -300, 300 )
         self.h_py=ROOT.TH1F( 'h_py', 'Muons y- Momentun', 50, -300, 300 )
@@ -121,7 +126,9 @@ class Analyzer(object):
         self.h_dz=ROOT.TH1F('h_dz','Distance from Primary vertex Z ', 50, -3,3)
         self.h_charge=ROOT.TH1F('h_charge','Muons Charge', 4,-2,2)
         self.h_normChi2=ROOT.TH1F('h_normChi2', 'Muons Chi2/ndof', 50, 0,100)
-        self.h_numberOfValidHits=ROOT.TH1F('h_numberOfValidHits', 'Number of Valid Hits', 50, 0,100)
+        self.h_numberOfValidHits=ROOT.TH1F('h_numberOfValidHits', 'Number of Valid Hits', 50, 0,50)
+        self.h_numOfMatches=ROOT.TH1F('h_numOfMatches', 'Number of muon chambers matched',10, 0, 10)
+        self.h_NValidHitsSATk=ROOT.TH1F('h_NValidHitsSATk', 'Number of hits in the muon chambers', 50, 0, 100)
         self.h_dB=ROOT.TH1F('h_dB','Impact Parameter',50,0,2)
         #self.h_edB=ROOT.TH1F('h_edB','Impact Parameter Error',50,-1,200) >> Pintar como barras de error en el histograma?
         self.h_isolation_sumPt=ROOT.TH1F('h_isolation_sumPt','Tracker Isolation',50, 0,300)
@@ -138,6 +145,16 @@ class Analyzer(object):
         #self.relIso = self.Muon_isolation_hadEt[particle] + self.Muon_isolation_hadEt[particle] + self.Muon_isolation_sumPt[particle]/self.Muon_pt[particle]
         self.h_isolation.Fill(self.Muon_isolation_hadEt[particle] + self.Muon_isolation_hadEt[particle] + self.Muon_isolation_sumPt[particle]/self.Muon_pt[particle])
 	'''Function that fill the histograms for each variable and particle in the event'''
+        
+        if self.Muon_isTrackerMuon[particle] == 1:
+            self.h_MuonType.Fill(1)
+        elif self.Muon_isStandAloneMuon[particle] == 1:
+            self.h_MuonType.Fill(2)
+        elif self.Muon_isGlobalMuon[particle] == 1: 
+            self.h_MuonType.Fill(3)
+        elif self.Muon_isGlobalMuon[particle] == 1 and self.Muon_isTrackerMuon[particle] == 1: 
+            self.h_MuonType.Fill(4)
+        
         self.h_pt.Fill(self.Muon_pt[particle])
         self.h_px.Fill(self.Muon_px[particle])
         self.h_py.Fill(self.Muon_py[particle])
@@ -148,16 +165,19 @@ class Analyzer(object):
         self.h_charge.Fill(self.Muon_charge[particle])
         self.h_normChi2.Fill(self.Muon_normChi2[particle])
         self.h_numberOfValidHits.Fill(self.Muon_numberOfValidHits[particle])
+        self.h_numOfMatches.Fill(self.Muon_numOfMatches[particle])
        	self.h_dB.Fill(self.Muon_dB[particle])
         self.h_isolation_sumPt.Fill(self.Muon_isolation_sumPt[particle])
        	self.h_isolation_emEt.Fill(self.Muon_isolation_emEt[particle])
         self.h_isolation_hadEt.Fill(self.Muon_isolation_hadEt[particle])
-    #  self.h_numOfMatches.Fill(self.Muon_numOfMatches[particle])
-        
+        self.h_NValidHitsSATk.Fill(self.Muon_NValidHitsSATk[particle])
+
+                                   
     def WriteHistograms(self):
         '''Function to write Histograms: Neither mass nor efficiency
 	Add here the histograms to print'''
-	self.h_pt.Write()
+	self.h_MuonType.Write()
+        self.h_pt.Write()
         self.h_px.Write()
         self.h_py.Write()
         self.h_pz.Write()
@@ -167,6 +187,8 @@ class Analyzer(object):
         self.h_charge.Write()
         self.h_normChi2.Write()
         self.h_numberOfValidHits.Write()
+        self.h_numOfMatches.Write()
+        self.h_NValidHitsSATk.Write()
         self.h_dB.Write()
         self.h_isolation_sumPt.Write()
         self.h_isolation_emEt.Write()
