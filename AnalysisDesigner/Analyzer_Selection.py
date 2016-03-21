@@ -12,7 +12,7 @@ class AnalyzerSel(Analyzer):
     def DefineHistograms(self):
         Analyzer.DefineHistograms(self)
         #Add histograms for the mass and efficiency
-        self.h_efficiency=ROOT.TH1F('h_efficiency','efficiency',10,0,11)
+        self.h_efficiency=ROOT.TH1F('h_efficiency','efficiency',11,1,12)
 
     def process(self, event):
 	'''Executed on every event'''

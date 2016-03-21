@@ -128,14 +128,14 @@ class Analyzer(object):
         self.h_normChi2=ROOT.TH1F('h_normChi2', 'Muons Chi2/ndof', 50, 0,100)
         self.h_numberOfValidHits=ROOT.TH1F('h_numberOfValidHits', 'Number of Valid Hits', 50, 0,50)
         self.h_numOfMatches=ROOT.TH1F('h_numOfMatches', 'Number of muon chambers matched',10, 0, 10)
-        self.h_NValidHitsSATk=ROOT.TH1F('h_NValidHitsSATk', 'Number of hits in the muon chambers', 50, 0, 100)
+        self.h_NValidHitsSATk=ROOT.TH1F('h_NValidHitsSATk', 'Number of hits in the muon chambers', 60, 0, 60)
         self.h_dB=ROOT.TH1F('h_dB','Impact Parameter',50,0,2)
         #self.h_edB=ROOT.TH1F('h_edB','Impact Parameter Error',50,-1,200) >> Pintar como barras de error en el histograma?
         self.h_isolation_sumPt=ROOT.TH1F('h_isolation_sumPt','Tracker Isolation',50, 0,300)
         self.h_isolation_emEt=ROOT.TH1F('h_isolation_emEt','ECAL Isolation',50, 0,300)
         self.h_isolation_hadEt=ROOT.TH1F('h_isolation_hadEt','HCAL Isolation',50, 0,300)
         self.h_isolation=ROOT.TH1F('h_isolation','Relative Isolation',50, 0,300)
-	self.h_mass=ROOT.TH1F('h_mass', 'MassInv', 90, 0, 300)
+	self.h_mass=ROOT.TH1F('h_mass', 'MassInv', 150, 0, 300)
      #   self.h_numOfMatches=ROOT.TH1F('h_numOfMatches', 'Number of matches in the Muon chambers', 8, 0, 8)
 
         
@@ -148,12 +148,16 @@ class Analyzer(object):
         
         if self.Muon_isTrackerMuon[particle] == 1:
             self.h_MuonType.Fill(1)
-        elif self.Muon_isStandAloneMuon[particle] == 1:
+            
+        if self.Muon_isStandAloneMuon[particle] == 1:
             self.h_MuonType.Fill(2)
-        elif self.Muon_isGlobalMuon[particle] == 1: 
+
+        if self.Muon_isGlobalMuon[particle] == 1: 
             self.h_MuonType.Fill(3)
-        elif self.Muon_isGlobalMuon[particle] == 1 and self.Muon_isTrackerMuon[particle] == 1: 
+        
+        if self.Muon_isGlobalMuon[particle] == 1 and self.Muon_isTrackerMuon[particle] == 1: 
             self.h_MuonType.Fill(4)
+        
         
         self.h_pt.Fill(self.Muon_pt[particle])
         self.h_px.Fill(self.Muon_px[particle])
