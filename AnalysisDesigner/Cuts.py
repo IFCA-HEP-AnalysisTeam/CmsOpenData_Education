@@ -1,5 +1,5 @@
 class Cuts(object):
-	def __init__(self, isGlobal = 1, pt_min = 5, eta_max = 2.4, normChi2 = 10, numValidHitsSTATk = 10, numValidHits = 10, numOfMatches = 1, dz_max = 0.2, dB_max = 0.02, relIsolation = 0.15, mass_min = 0):
+        def __init__(self, isGlobal = 1, pt_min = 5, eta_max = 2.4, normChi2 = 10, numValidHitsSTATk = 10, numValidHits = 10, numOfMatches = 1, dz_max = 0.2, dB_max = 0.02, relIsolation = 0.15, mass_min = 0):
 
                 self.isGlobal = isGlobal
                 self.pt_min = pt_min

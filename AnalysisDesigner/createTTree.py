@@ -13,10 +13,10 @@ class createTTree(object):
 
         def __init__(self, data_files):
 
-                # To manage Pattuple information in Python (????)		 
+                # To manage Pattuple information in Python (????)
                 self.muonHandle = Handle('std::vector<pat::Muon>')
                 self.vertexHandle = Handle('std::vector<reco::Vertex>')	
-		#self.electronHandle = Handle('std::vector<pat::Electron>')
+                #self.electronHandle = Handle('std::vector<pat::Electron>')
   
                 # Open data files and get the events  
                 self.events = Events(data_files)
@@ -24,7 +24,7 @@ class createTTree(object):
                 # Create a .root file using "RECREATE" option of TFile Class where the tree will be save.
                 self.f = ROOT.TFile("datafiles/mytree.root","RECREATE")
                 self.tree=ROOT.TTree("muons","muons tree")
-		
+
                 # Declare the name of your tree variables
                 self.Muon_pt = ROOT.std.vector('float')()
                 self.Muon_eta = ROOT.std.vector('float')()
@@ -45,18 +45,18 @@ class createTTree(object):
                 self.Muon_charge = ROOT.std.vector('int')()
                 # distance in z axis between Primary vertex Z coordenate and muon's z vertex coordenate
                 self.Muon_distance = ROOT.std.vector('float')()
-	
+
                 self.Vertex_Z = 0.	
 
                 # Vectors for new branches
-		
+
                 self.Muon_isStandAloneMuon = ROOT.std.vector('int')()
                 self.Muon_numOfMatches = ROOT.std.vector('int')() 
                 #self.Muon_deltaPt = ROOT.std.vector('float')()
                 self.Muon_NValidHitsSATK = ROOT.std.vector('int')()
                 #self.Muon_NValidHitsInTk = ROOT.std.vector('int')()
                 #self.Muon_NValidPixelHitsnTk = ROOT.std.vector('int')()
-		
+
         def getMuons(self, event):
                 """
                 event: one element of self.events
@@ -108,13 +108,12 @@ class createTTree(object):
                 self.tree.Branch("Muon_normChi2", self.Muon_normChi2)
                 self.tree.Branch("Muon_charge", self.Muon_charge)
                 self.tree.Branch("Muon_distance",self.Muon_distance)
-			
+
                 self.tree.Branch("Muon_numOfMatches", self.Muon_numOfMatches)
                 #self.tree.Branch("Muon_deltaPt", self.Muon_delaPt)
                 self.tree.Branch("Muon_NValidHitsSATk", self.Muon_NValidHitsSATK)
                 #self.tree.Branch("Muon_NValidHitsInTk", self.Muon_NValidHitsInTk)
                 #self.tree.Branch("Muon_NValidPixelHitsnTk", self.Muon_NValidPixelHitsnTk)
-		
 
                 # Loop the events and populate the variables
                 for N, event in enumerate(self.events):
@@ -122,14 +121,14 @@ class createTTree(object):
                         if maxEv >= 0 and (N + 1) >= maxEv:
                             break
 
-			# Do this for each event:
+                        # Do this for each event:
                         muons = self.getMuons(event)
                         vertex = self.getVertex(event)
                         self.Vertex_Z = vertex.z()
 
                         #Do this for each particle in the event
                         for i, muon in enumerate(muons): 
-				
+
                                 self.Muon_pt.push_back(muon.pt())
                                 self.Muon_eta.push_back(muon.eta())
                                 self.Muon_px.push_back(muon.px())
@@ -156,9 +155,9 @@ class createTTree(object):
 
                                         self.Muon_numberOfValidHits.push_back(muon.numberOfValidHits())
                                         self.Muon_normChi2.push_back(muon.normChi2())
-			
+
                                         # Next lines does not work -> The function numberOfValidTrackerHits does not exist for this DATA
-                                        #if not muon.innerTrack().isNull():
+                                        # if not muon.innerTrack().isNull():
                                         #       print muon.innerTrack()	
                                         #       #self.Muon_NValidHitsInTk.push_back(muon.innerTrack().hitPattern())
                                         #       self.Muon_NValidHitsInTk.push_back(muon.innerTrack().hitPattern().numberOfValidTrackerHits())
@@ -167,15 +166,14 @@ class createTTree(object):
                                 else:
                                         self.Muon_numberOfValidHits.push_back(-999)
                                         self.Muon_normChi2.push_back(-999)
-				
-				if not muon.standAloneMuon().isNull():
-					self.Muon_NValidHitsSATK.push_back(muon.standAloneMuon().hitPattern().numberOfValidMuonHits())
 
-                        #Fill the tree			
+                                if not muon.standAloneMuon().isNull():
+                                        self.Muon_NValidHitsSATK.push_back(muon.standAloneMuon().hitPattern().numberOfValidMuonHits())
+
+                        #Fill the tree
                         self.tree.Fill()
-		
-			
-                        #Clear the variables			
+
+                        #Clear the variables
                         self.Muon_pt.clear()
                         self.Muon_eta.clear()
                         self.Muon_px.clear()

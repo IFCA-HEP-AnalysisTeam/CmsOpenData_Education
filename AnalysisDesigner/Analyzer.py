@@ -16,7 +16,7 @@ class Analyzer(object):
         Attributes:
         dirName : analyzer directory, where you can write anything you want
         """
-	#self.file = ROOT.gROOT.GetListOfFiles().FindObject("mytree.root")
+        #self.file = ROOT.gROOT.GetListOfFiles().FindObject("mytree.root")
         #if not self.file or not file.IsOpen():
         #    self.file = ROOT.TFile("datafiles/mytree.root", "read")
         #self.tree = self.file.Get("muons")
@@ -27,10 +27,10 @@ class Analyzer(object):
         self.tree = self.file.Get("muons")
         
         # Get the number of entries(events) of the TTree (file.root)
-	self.numEntries=self.tree.GetEntries()
-	self.Setup(self.tree)
+        self.numEntries=self.tree.GetEntries()
+        self.Setup(self.tree)
 
-	# Create a directory for this Analyzer
+        # Create a directory for this Analyzer
         #self.dirName = '/'.join( [type(self).__name__] )
         #os.mkdir( self.dirName )
 
@@ -42,29 +42,35 @@ class Analyzer(object):
         #self.beginLoopCalled = False
 
     def beginJob(self, name):
-	'''Executed before the first object comes in'''
+        '''Executed before the first object comes in'''
 
         print '*** Begin job'
-	self.DefineHistograms()
-	self.rootfile= ROOT.TFile("datafiles/"+name, "RECREATE") 
+        self.DefineHistograms()
+        self.rootfile= ROOT.TFile("datafiles/"+name, "RECREATE") 
 
     def process(self, event):
-	'''Executed on every event'''
-	pass
+        '''Executed on every event'''
+        pass
 
 
     def endJob(self):
-
-	print "*** writing file", self.rootfile
+        ''' 
+        Executed after the analysis to write the histograms in the root file
+        '''
+        print "*** writing file", self.rootfile
         self.WriteHistograms()
-	self.rootfile.Close()
-	print "*** done"
+        self.rootfile.Close()
+        print "*** done"
 
     def Setup(self, tree):
-
+        '''
+        Setup, init the variables for the particle and set 
+        branch addresses
+   
+        '''
         self.relIso = -999. 
         
-	self.Muon_pt = ROOT.std.vector('float')()
+        self.Muon_pt = ROOT.std.vector('float')()
         self.Muon_px= ROOT.std.vector('float')()
         self.Muon_py= ROOT.std.vector('float')()
         self.Muon_pz= ROOT.std.vector('float')()
@@ -106,15 +112,15 @@ class Analyzer(object):
         tree.SetBranchAddress("Muon_normChi2", self.Muon_normChi2)
         tree.SetBranchAddress("Muon_charge", self.Muon_charge)
     
-    #  tree.SetBranchAddress("Muon_numOfMatches", self.Muon_numOfMatches)
+        # tree.SetBranchAddress("Muon_numOfMatches", self.Muon_numOfMatches)
 
    
 
     ### DEFINE AND FILL HISTOGRAMS ### 
 
     def DefineHistograms(self):
-	'''Function that define the histograms for all and selected analyzers'''
-	# Define and init the histograms for each branch as a TH1F object from ROOT
+        '''Function that define the histograms for all and selected analyzers'''
+        # Define and init the histograms for each branch as a TH1F object from ROOT
 
         self.h_MuonType=ROOT.TH1F('h_type', 'Number of Muons', 4, 1, 5)
         self.h_pt=ROOT.TH1F( 'h_pt', 'Muons Transverse Momentun', 50, 0, 200 )
@@ -135,7 +141,7 @@ class Analyzer(object):
         self.h_isolation_emEt=ROOT.TH1F('h_isolation_emEt','ECAL Isolation',50, 0,300)
         self.h_isolation_hadEt=ROOT.TH1F('h_isolation_hadEt','HCAL Isolation',50, 0,300)
         self.h_isolation=ROOT.TH1F('h_isolation','Relative Isolation',50, 0,300)
-	self.h_mass=ROOT.TH1F('h_mass', 'MassInv', 150, 0, 300)
+        self.h_mass=ROOT.TH1F('h_mass', 'MassInv', 150, 0, 300)
      #   self.h_numOfMatches=ROOT.TH1F('h_numOfMatches', 'Number of matches in the Muon chambers', 8, 0, 8)
 
         
@@ -144,7 +150,7 @@ class Analyzer(object):
        
         #self.relIso = self.Muon_isolation_hadEt[particle] + self.Muon_isolation_hadEt[particle] + self.Muon_isolation_sumPt[particle]/self.Muon_pt[particle]
         self.h_isolation.Fill(self.Muon_isolation_hadEt[particle] + self.Muon_isolation_hadEt[particle] + self.Muon_isolation_sumPt[particle]/self.Muon_pt[particle])
-	'''Function that fill the histograms for each variable and particle in the event'''
+        '''Function that fill the histograms for each variable and particle in the event'''
         
         if self.Muon_isTrackerMuon[particle] == 1:
             self.h_MuonType.Fill(1)
@@ -179,8 +185,8 @@ class Analyzer(object):
                                    
     def WriteHistograms(self):
         '''Function to write Histograms: Neither mass nor efficiency
-	Add here the histograms to print'''
-	self.h_MuonType.Write()
+        Add here the histograms to print'''
+        self.h_MuonType.Write()
         self.h_pt.Write()
         self.h_px.Write()
         self.h_py.Write()
@@ -199,4 +205,4 @@ class Analyzer(object):
         self.h_isolation_hadEt.Write()
         self.h_isolation.Write()
         #self_h_numOfMatches.Write()
-	self.h_mass.Write()
+        self.h_mass.Write()

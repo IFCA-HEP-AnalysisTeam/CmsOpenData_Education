@@ -5,16 +5,12 @@ import ROOT
 from Cuts import Cuts
 
 class Selector(object):
-	''' Class that make the selection from a defined Cuts'''
-	#def __init__(self):
-	#    print '''***Selector created'''
-	    
+        ''' Class that make the selection from a defined Cuts'''
+        def selector(self, analysis, particle):
+                cuts = Cuts()
 
-	def selector(self, analysis, particle):
-		cuts = Cuts()
-
-		'''Main class for making the selection'''
-		if not analysis.Muon_isGlobalMuon[particle] or not analysis.Muon_isTrackerMuon[particle]:
+                '''Main class for making the selection'''
+                if not analysis.Muon_isGlobalMuon[particle] or not analysis.Muon_isTrackerMuon[particle]:
                         return False
                 analysis.h_efficiency.Fill(2)
                 
@@ -55,6 +51,4 @@ class Selector(object):
                 analysis.h_efficiency.Fill(11)
                
                 return True
-
-
 
