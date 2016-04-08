@@ -13,11 +13,12 @@ class AnalyzerSel(Analyzer):
         Analyzer.DefineHistograms(self)
         #Add histograms for the mass and efficiency
         self.h_efficiency=ROOT.TH1F('h_efficiency','efficiency',11,1,12)
+        print ("efficiency defined")
 
-    def process(self, event):
+    def process(self, event, selector):
         '''Executed on every event'''
         self.tree.GetEntry(event)
-        selec = Selector()
+        #selec = Selector()
         for particle in range(0,self.Muon_pt.size()):
                         # Fill the histogram for each variable
                                 self.h_efficiency.Fill(1)
@@ -37,12 +38,12 @@ class AnalyzerSel(Analyzer):
                                                         #print mass
 
                                                         # If the both muons are selected between the cuts fill the histogram 
-                                                        if selec.selector(self,particle) and selec.selector(self, j):
+                                                        if selector.selector(self,particle) and selector.selector(self, j):
                                                                 self.h_mass.Fill(mass)
 
                                 # Apply the selection over all particles in the event calling the selector function and fill the histograms for each variable
-                                if selec.selector(self, particle):
-                                        self.FillHistograms( particle)
+                                if selector.selector(self, particle):
+                                        self.FillHistograms(particle)
 
 
     def endJob(self):

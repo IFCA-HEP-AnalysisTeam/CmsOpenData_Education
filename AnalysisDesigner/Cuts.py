@@ -3,7 +3,7 @@ class Cuts(object):
 
                 self.isGlobal = isGlobal
                 self.pt_min = pt_min
-                self.eta_max = eta_max
+                self.eta_max = 0
                 self.normChi2 = normChi2
                 self.numValidHitsSTATk =  numValidHitsSTATk 
                 self.numValidHits = numValidHits
