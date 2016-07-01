@@ -3,7 +3,7 @@ import logging
 import ROOT
 
 from Analyzer import Analyzer
-from Selector import Selector
+#import Selec
 
 class AnalyzerSel(Analyzer):
     """Selection Analyzer class. 
@@ -15,9 +15,10 @@ class AnalyzerSel(Analyzer):
         self.h_efficiency=ROOT.TH1F('h_efficiency','efficiency',11,1,12)
         print ("efficiency defined")
 
-    def process(self, event, selector):
+    def process(self, event,selector):
         '''Executed on every event'''
         self.tree.GetEntry(event)
+        
         #selec = Selector()
         for particle in range(0,self.Muon_pt.size()):
                         # Fill the histogram for each variable
