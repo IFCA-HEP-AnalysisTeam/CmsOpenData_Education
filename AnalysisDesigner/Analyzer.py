@@ -149,7 +149,7 @@ class Analyzer(object):
     def FillHistograms(self, particle):
        
         #self.relIso = self.Muon_isolation_hadEt[particle] + self.Muon_isolation_hadEt[particle] + self.Muon_isolation_sumPt[particle]/self.Muon_pt[particle]
-        self.h_isolation.Fill(self.Muon_isolation_hadEt[particle] + self.Muon_isolation_hadEt[particle] + self.Muon_isolation_sumPt[particle]/self.Muon_pt[particle])
+        self.h_isolation.Fill((self.Muon_isolation_hadEt[particle] + self.Muon_isolation_hadEt[particle] + self.Muon_isolation_sumPt[particle])/self.Muon_pt[particle])
         '''Function that fill the histograms for each variable and particle in the event'''
         
         if self.Muon_isTrackerMuon[particle] == 1:
